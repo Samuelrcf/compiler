@@ -8,6 +8,31 @@ Erick Patrick de Paula Morais Freitas
 
 Samuel Rogenes Carvalho Freire
 
+## Funcionalidades
+- Identificação de tokens: palavras-chave, identificadores, operadores e literais.
+- Validação da conformidade com a Manchester Syntax.
+- Detecção de erros lexicais em arquivos OWL2.
+
+## Requisitos
+
+Antes de começar, certifique-se de que você possui os seguintes requisitos:
+
+- **G++** (ou outro compilador C++ compatível)
+- **GDB** (para depuração)
+- **Make** (opcional, se você preferir usar o Make ao invés do CMake)
+- **CMake** (para construção do projeto)
+- **Flex** (Ferramenta de Analisador Léxico)
+- **Bison** (se necessário para a parte sintática)
+
+### Instalação no Ubuntu (exemplo)
+
+Se você não tem o Flex, Bison, CMake, Make, GCC ou GDB instalados, você pode instalar utilizando os seguintes comandos:
+
+```bash
+sudo apt-get update
+sudo apt-get install flex bison cmake make g++ gdb
+```
+
 ## Desafio
 O desafio proposto é desenvolver um analisador léxico capaz de identificar e categorizar os seguintes elementos da linguagem OWL2:
 
