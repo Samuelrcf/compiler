@@ -51,7 +51,7 @@ sudo apt-get install flex bison cmake make g++ gdb
 ├── lexer.l                # Arquivo de definições do Flex (lexer)
 ├── Makefile               # Arquivo de configuração para o Make
 ├── symbol_table.h         # Cabeçalho da tabela de símbolos
-└── teste                  # Arquivo de texto (usado para validar o lexer e gerar a tabela de símbolos)
+└── teste                  # Arquivo de texto com a linguagem **OWL2** no formato **Manchester Syntax** (usado para validar o lexer e gerar a tabela de símbolos)
 ```
 
 
