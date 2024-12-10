@@ -33,6 +33,19 @@ sudo apt-get update
 sudo apt-get install flex bison cmake make g++ gdb
 ```
 
+## Estrutura do Projeto
+
+```plaintext
+.
+├── lex.yy.cc              # Código gerado pelo Flex (lexer)
+├── lexer.l                # Arquivo de definições do Flex (lexer)
+├── Makefile               # Arquivo de configuração para o Make
+├── symbol_table.h         # Cabeçalho da tabela de símbolos
+└── teste                  # Arquivo de testes (geralmente usado para validar o lexer e a tabela de símbolos)
+```
+
+
+
 ## Desafio
 O desafio proposto é desenvolver um analisador léxico capaz de identificar e categorizar os seguintes elementos da linguagem OWL2:
 
