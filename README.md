@@ -33,7 +33,7 @@ Antes de começar, certifique-se de que você possui os seguintes requisitos:
 - **Make** (opcional, se você preferir usar o Make ao invés do CMake)
 - **CMake** (para construção do projeto)
 - **Flex** (Ferramenta de Analisador Léxico)
-- **Bison** (se necessário para a parte sintática)
+- **Bison** (necessário para a parte sintática)
 
 ### Instalação no Ubuntu (exemplo)
 
@@ -52,7 +52,7 @@ sudo apt-get install flex bison cmake make g++ gdb
 ├── lexer.l                # Arquivo de definições do Flex (lexer)
 ├── Makefile               # Arquivo de configuração para o Make
 ├── symbol_table.h         # Cabeçalho da tabela de símbolos
-└── teste                  # Arquivo de testes (geralmente usado para validar o lexer e a tabela de símbolos)
+└── teste                  # Arquivo de texto (usado para validar o lexer e gerar a tabela de símbolos)
 ```
 
 
@@ -96,3 +96,24 @@ Identificados por uma sequência de 3 a 4 letras minúsculas seguidas por dois p
 ## Tabela de Símbolos
 
 O analisador mantém uma tabela de símbolos onde são armazenados os tokens identificados, suas categorias (por exemplo, tipo, classe, propriedade) e o número da linha onde foram encontrados.
+
+## Como usar o Analisador Léxico
+### Passo 1: Clonar o Repositório ou Fazer o Download
+Clone o repositório do github com o comando "git clone git@github.com:Samuelrcf/compiler.git" ou faça o Download Zip.
+
+### Passo 2: Configurar o Ambiente
+Certifique-se de estar em um ambiente Linux ou usando o WSL (Windows Subsystem for Linux).
+Abra o repositório no VSCode (ou outro editor/IDE de sua preferência que suporte C/C++).
+
+### Passo 3: Compilar e Executar o Analisador Léxico
+Abra um terminal na pasta onde o programa lexer.l está localizado e execute os seguintes comandos:
+#### Utilizado para processar o arquivo lexer.l
+flex -+ lexer.l 
+#### Compila o arquivo lex.yy.cc gerado pelo Flex, usando o compilador g++
+g++ -o lexer lex.yy.cc -lfl
+#### Executa o programa gerado (lexer) e redireciona o conteúdo do arquivo teste como entrada para o analisador léxico
+./lexer < teste
+
+Substitua "teste" pelo nome do arquivo que contém o texto a ser analisado.
+Certifique-se de que o arquivo teste está na mesma pasta onde o programa foi compilado ou use o caminho completo para ele.
+Se aparecer algum erro durante a execução dos comandos, verifique se todas as dependências necessárias estão instaladas no sistema, como o Flex e o G++.
