@@ -33,7 +33,6 @@ Antes de começar, certifique-se de que você possui os seguintes requisitos:
 - **Make** (opcional, se você preferir usar o Make ao invés do CMake)
 - **CMake** (para construção do projeto)
 - **Flex** (Ferramenta de Analisador Léxico)
-- **Bison** (necessário para a parte sintática)
 
 ### Instalação no Ubuntu (exemplo)
 
@@ -95,11 +94,15 @@ Identificados por uma sequência de 3 a 4 letras minúsculas seguidas por dois p
 
 ## Tabela de Símbolos
 
-O analisador mantém uma tabela de símbolos onde são armazenados os tokens identificados, suas categorias (por exemplo, tipo, classe, propriedade) e o número da linha onde foram encontrados.
+O analisador mantém uma tabela de símbolos onde são armazenados os tokens identificados (name), suas categorias (type) e o número da(s) linha(s) onde foram encontrados.
 
 ## Como usar o Analisador Léxico
 ### Passo 1: Clonar o Repositório ou Fazer o Download
-Clone o repositório do github com o comando "git clone git@github.com:Samuelrcf/compiler.git" ou faça o Download Zip.
+Clone o repositório do github com o comando: 
+```plaintext
+git clone git@github.com:Samuelrcf/compiler.git
+```
+ou faça o Download Zip.
 
 ### Passo 2: Configurar o Ambiente
 Certifique-se de estar em um ambiente Linux ou usando o WSL (Windows Subsystem for Linux).
