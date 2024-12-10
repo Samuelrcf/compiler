@@ -1,5 +1,16 @@
 # Analisador Léxico para OWL2 (Manchester Syntax)
 
+## Índice
+
+1. [Descrição](#descrição)
+2. [Integrantes do Grupo](#integrantes-do-grupo)
+3. [Funcionalidades](#funcionalidades)
+4. [Requisitos](#requisitos)
+   - 4.1 [Instalação no Ubuntu](#instalação-no-ubuntu-exemplo)
+5. [Estrutura do Projeto](#estrutura-do-projeto)
+6. [Principais Componentes](#principais-componentes)
+7. [Tabela de Símbolos](#tabela-de-símbolos)
+
 ## Descrição
 Este projeto tem como objetivo desenvolver um **analisador léxico** para a linguagem **OWL2** no formato **Manchester Syntax**, capaz de identificar e classificar tokens como palavras-chave, identificadores, operadores e literais. O analisador será responsável por reconhecer os elementos lexicais presentes em arquivos OWL2, garantindo conformidade com as regras da sintaxe e detectando possíveis erros. Essa ferramenta é essencial para validar a estrutura léxica de ontologias e prepará-las para uso em sistemas semânticos, como motores de inferência e integração de dados.
 
