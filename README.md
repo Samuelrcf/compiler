@@ -20,9 +20,32 @@ Erick Patrick de Paula Morais Freitas
 Samuel Rogenes Carvalho Freire
 
 ## Funcionalidades
-- Identificação de tokens: palavras-chave, identificadores, operadores e literais.
+As funcionalidades principais incluem:
+
+### Identificação de Tokens:
+
+- Identifica operadores relacionais (e.g., AND, OR, NOT), quantificadores (e.g., SOME, ALL, VALUE), tipos de dados (rational, real, etc.), classes, palavras-chave, literais e outros símbolos especiais.
+- Detecta erros, como tokens inválidos ou desconhecidos, exibindo mensagens de erro no console.
 - Validação da conformidade com a Manchester Syntax.
-- Detecção de erros lexicais em arquivos OWL2.
+
+### Tabela de Símbolos:
+
+- Registra informações sobre cada token detectado, como o tipo, o valor, e a linha onde ocorreu.
+  
+### Contadores:
+
+- Mantém contadores para rastrear a frequência de cada tipo de token identificado durante a análise.
+
+### Execução:
+
+#### Processa uma entrada padrão (stdin) ou arquivo fornecido, analisa os tokens e exibe:
+- A contagem de cada tipo de token.
+- O conteúdo completo da tabela de símbolos.
+  
+### Estrutura do Código:
+
+Utiliza uma biblioteca personalizada (symbol_table.h) para gerenciar a tabela de símbolos.
+Aplica padrões regulares para definir regras de identificação de tokens no arquivo de entrada.
 
 ## Requisitos
 
