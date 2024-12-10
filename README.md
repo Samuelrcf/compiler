@@ -108,11 +108,17 @@ Abra o repositório no VSCode (ou outro editor/IDE de sua preferência que supor
 ### Passo 3: Compilar e Executar o Analisador Léxico
 Abra um terminal na pasta onde o programa lexer.l está localizado e execute os seguintes comandos:
 #### Utilizado para processar o arquivo lexer.l
-flex -+ lexer.l 
+```plaintext
+flex -+ lexer.l
+```
 #### Compila o arquivo lex.yy.cc gerado pelo Flex, usando o compilador g++
+```plaintext
 g++ -o lexer lex.yy.cc -lfl
+```
 #### Executa o programa gerado (lexer) e redireciona o conteúdo do arquivo teste como entrada para o analisador léxico
+```plaintext
 ./lexer < teste
+```
 
 Substitua "teste" pelo nome do arquivo que contém o texto a ser analisado.
 Certifique-se de que o arquivo teste está na mesma pasta onde o programa foi compilado ou use o caminho completo para ele.
