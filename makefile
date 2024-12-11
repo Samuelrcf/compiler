@@ -4,13 +4,13 @@ CC=g++
 LEX=flex++
 
 # Dependências
-all: states
+all: lexer
 
-states: lex.yy.cc
-	$(CC) lex.yy.cc -std=c++17 -o states
+lexer: lex.yy.cc
+	$(CC) lex.yy.cc -std=c++17 -o lexer
 
-lex.yy.cc: states.l
-	$(LEX) states.l
+lex.yy.cc: lexer.l
+	$(LEX) lexer.l
 
 clean:
-	rm states lex.yy.cc
+	rm lexer lex.yy.cc

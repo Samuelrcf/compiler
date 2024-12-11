@@ -325,7 +325,7 @@ SymbolTable symbolTable; // Instância da tabela de símbolos
     symbolTable.addSymbol(yytext, "Cardinal", yylineno);
 }
 
-[ \t\n]+                                { /* Ignorar espaços, tabs e novas linhas */ }
+[ \n\t\r]+                                { /* Ignorar espaços, tabs e novas linhas */ }
 .                                       { cout << "[ERROR] Unknown token: " << yytext << " Line: " << yylineno << "\n"; } 
 
 %%
