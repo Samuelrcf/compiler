@@ -10,7 +10,7 @@ int types = 0, rational = 0, real = 0, langString = 0, plainLiteral = 0, xmlLite
 
 int quantifiers = 0, relOp = 0, keyWord = 0, operators = 0, classes = 0, literals = 0, properties = 0, symbols = 0, individuals = 0, nameSpaces = 0, cardinals = 0;
 
-int andCount = 0, orCount = 0, notCount = 0, someCount = 0, allCount = 0, valueCount = 0, minCount = 0, maxCount = 0, exactlyCount = 0, thatCount = 0, onlyCount = 0, classCount = 0, equivalentToCount = 0, individualsCount = 0, subClassOfCount = 0, disjointClasses = 0;
+int andCount = 0, orCount = 0, notCount = 0, someCount = 0, allCount = 0, valueCount = 0, minCount = 0, maxCount = 0, exactlyCount = 0, thatCount = 0, onlyCount = 0, classCount = 0, equivalentToCount = 0, individualsCount = 0, subClassOfCount = 0, disjointClasses = 0, disjointWith = 0;
 
 SymbolTable symbolTable; // Instância da tabela de símbolos
 %}
@@ -109,6 +109,11 @@ SymbolTable symbolTable; // Instância da tabela de símbolos
 "DisjointClasses:" {
     symbolTable.addSymbol("DisjointClasses", "Keyword", yylineno);
     disjointClasses++;
+}
+
+"DisjointWith:" {
+    symbolTable.addSymbol("DisjointWith", "Keyword", yylineno);
+    disjointWith++;
 }
 
 "rational" {
@@ -312,7 +317,7 @@ SymbolTable symbolTable; // Instância da tabela de símbolos
 }
 
 [0-9]+[a-zA-Z!@#$%^&*()_+={}\[:;,.<>?/\\|~`-]+ {
-    cout << "[ERROR] Invalid Token: \"" << yytext << "\". Cardinal must not be followed by letters or invalid symbols.\n";
+    cout << "[ERROR] Invalid Token: \"" << yytext << "\". Cardinal must not be followed by letters or invalid symbols. Line: " << yylineno << "\n";
 }
 
 [0-9]+ {
@@ -321,7 +326,7 @@ SymbolTable symbolTable; // Instância da tabela de símbolos
 }
 
 [ \t\n]+                                { /* Ignorar espaços, tabs e novas linhas */ }
-.                                       { cout << "[ERROR] Unknown token: " << yytext << "\n"; } 
+.                                       { cout << "[ERROR] Unknown token: " << yytext << " Line: " << yylineno << "\n"; } 
 
 %%
 
