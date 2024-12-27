@@ -28,10 +28,6 @@ As funcionalidades principais incluem:
 - Detecta erros, como tokens inválidos ou desconhecidos, exibindo mensagens de erro no console.
 - Validação da conformidade com a Manchester Syntax.
 
-### Tabela de Símbolos:
-
-- Registra informações sobre cada token detectado, como o tipo, o valor, e a linha onde ocorreu.
-  
 ### Contadores:
 
 - Mantém contadores para rastrear a frequência de cada tipo de token identificado durante a análise.
@@ -117,7 +113,7 @@ Identificados por uma sequência de 3 a 4 letras minúsculas seguidas por dois p
 
 ## Tabela de Símbolos
 
-O analisador mantém uma tabela de símbolos onde são armazenados os tokens identificados (name), suas categorias (type) e o número da(s) linha(s) onde foram encontrados.
+A Tabela de Símbolos é uma estrutura fundamental em compiladores que armazena e gerencia informações sobre identificadores (como variáveis e funções) encontrados no código-fonte durante a análise léxica e sintática. Nesse projeto, a tabela foi implementada como uma classe em C++ que utiliza um std::unordered_map para mapear os nomes dos símbolos a uma estrutura contendo seu tipo e as linhas onde aparecem. Sua principal função é auxiliar futuramente na análise semântica, verificando o uso correto dos símbolos, e na geração de código, associando símbolos a endereços, visto que ela registra informações sobre cada token detectado, como o tipo, o valor, e a linha onde ocorreu. Ela possui métodos para adicionar novos símbolos e exibir a tabela formatada, evitando duplicação de linhas.
 
 ## Como usar o Analisador Léxico
 ### Passo 1: Clonar o Repositório ou Fazer o Download
@@ -133,13 +129,13 @@ Abra o repositório no VSCode (ou outro editor/IDE de sua preferência que supor
 
 ### Passo 3: Compilar e Executar o Analisador Léxico
 Abra um terminal na pasta onde o programa lexer.l está localizado e execute os seguintes comandos:
-#### Utilizado para processar o arquivo lexer.l
+#### Limpar os arquivos gerados durante o processo de compilação
 ```plaintext
-flex -+ lexer.l
+make clean
 ```
-#### Compila o arquivo lex.yy.cc gerado pelo Flex, usando o compilador g++
+#### Construir o arquivo executável lexer, conforme as dependências do Makefile
 ```plaintext
-g++ -o lexer lex.yy.cc -lfl
+make
 ```
 #### Executa o programa gerado (lexer) e redireciona o conteúdo do arquivo teste como entrada para o analisador léxico
 ```plaintext
