@@ -68,9 +68,9 @@ descriptions
         ;
 
 description
-        :   LEFT_PARENTHESIS PROPERTY SOME CLASSNAME RIGHT_PARENTHESIS
-        |   LEFT_PARENTHESIS PROPERTY SOME LEFT_PARENTHESIS PROPERTY VALUE CLASSNAME RIGHT_PARENTHESIS RIGHT_PARENTHESIS {print_rule("Classe com descrições aninhadas");}
-        |   LEFT_PARENTHESIS PROPERTY SOME NAMESPACE INTEGER LEFT_BRACKET GREATER_THAN_SIGN EQUALS CARDINAL RIGHT_BRACKET RIGHT_PARENTHESIS
+        :   LEFT_PARENTHESIS PROPERTY quantifier CLASSNAME RIGHT_PARENTHESIS
+        |   LEFT_PARENTHESIS PROPERTY quantifier LEFT_PARENTHESIS PROPERTY quantifier CLASSNAME RIGHT_PARENTHESIS RIGHT_PARENTHESIS {print_rule("Classe com descrições aninhadas");}
+        |   LEFT_PARENTHESIS PROPERTY quantifier NAMESPACE INTEGER LEFT_BRACKET GREATER_THAN_SIGN EQUALS CARDINAL RIGHT_BRACKET RIGHT_PARENTHESIS
         |   CLASSNAME COMMA subc_properties
         ;
 
@@ -80,9 +80,8 @@ subc_properties
         ;
 
 subc_property
-        : PROPERTY SOME CLASSNAME
-        | PROPERTY SOME subc_namespace_type
-        | PROPERTY ONLY subc_logical_expression
+        : PROPERTY quantifier subc_namespace_type
+        | PROPERTY quantifier subc_logical_expression
         ;
 
 subc_namespace_type
@@ -120,7 +119,7 @@ individual
         |   INDIVIDUAL
         ;
 
-/*quantifier
+quantifier
         : SOME
         | VALUE
         | THAT
@@ -129,11 +128,6 @@ individual
         | ALL
         | EXACTLY
         | ONLY
-
-relop
-        : OR
-        | NOT
-        | AND*/
 
 %%
 
