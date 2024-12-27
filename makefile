@@ -1,16 +1,21 @@
+all: lexer
 
 # Compiladores
-CC=g++
-LEX=flex++
+CPP=g++
+FLEX=flex
+BISON=bison
 
 # Dependências
 all: lexer
 
-lexer: lex.yy.cc
-	$(CC) lex.yy.cc -std=c++17 -o lexer
+lexer: lex.yy.c parser.tab.c
+	$(CPP) lex.yy.c parser.tab.c -std=c++17 -o analyzer
 
-lex.yy.cc: lexer.l
-	$(LEX) lexer.l
+lex.yy.c: lexer.l 
+	$(FLEX) lexer.l   # Usando flex ao invés de flex++
+
+parser.tab.c: parser.y
+	$(BISON) -d parser.y 
 
 clean:
-	rm lexer lex.yy.cc
+	rm analyzer lex.yy.c parser.tab.c parser.tab.h
