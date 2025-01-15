@@ -161,5 +161,91 @@ Por “consistência”, entende-se que a declaração das classes seguem uma or
           <p> FunctionalComplex</p>
         </li>
       </ul>
+<h2>Descrição dos Tokens do Analisador Sintático</h2>
+
+<p>Este texto descreve os tokens definidos no analisador sintático e suas funções no contexto da linguagem analisada. Os tokens são representações simbólicas que ajudam o parser a identificar e processar elementos da entrada de acordo com regras gramaticais.</p>
+
+---
+
+## **Tokens de Estruturação e Agrupamento**
+
+- **`CLASS`**: Declara uma nova classe.
+- **`EQUIVALENTTO`**: Define equivalência entre classes ou conceitos.
+- **`INDIVIDUALS`**: Lista de indivíduos associados a uma classe.
+- **`SUBCLASSOF`**: Indica que uma classe é subclasse de outra.
+- **`DISJOINTCLASSES`**: Declara que um conjunto de classes é mutuamente disjunto.
+- **`DISJOINTWITH`**: Especifica que duas classes são disjuntas.
+
+---
+
+## **Tokens para Agrupamento e Delimitação**
+
+- **`LEFT_PARENTHESIS`, `RIGHT_PARENTHESIS`**: Parênteses usados para agrupar expressões.
+- **`LEFT_BRACKET`, `RIGHT_BRACKET`**: Colchetes para delimitar listas ou propriedades.
+- **`LEFT_BRACE`, `RIGHT_BRACE`**: Chaves para enumerar classes ou indivíduos.
+
+---
+
+## **Tokens de Dados Literais**
+
+Estes tokens representam tipos de dados frequentemente usados em descrições de propriedades:
+
+- **Numéricos e Reais**
+  - **`RATIONAL`**: Número racional.
+  - **`REAL`**: Número real.
+  - **`DECIMAL`**, **`DOUBLE`**, **`FLOAT`**: Representam diferentes formatos de números com ponto flutuante.
+  - **`INT`**, **`INTEGER`**, **`SHORT`**, **`LONG`**: Representam números inteiros de diferentes precisões.
+  - **`POSITIVEINTEGER`**, **`NEGATIVEINTEGER`**, **`NONNEGATIVEINTEGER`**, **`NONPOSITIVEINTEGER`**: Variantes de inteiros com restrições de sinal.
+
+- **Strings e Literais**
+  - **`LANGSTRING`**: String com especificação de linguagem.
+  - **`PLAINLITERAL`**, **`XMLLITERAL`**, **`LITERAL`**: Tipos de literais para expressar valores textuais.
+  - **`NORMALIZEDSTRING`**, **`TOKEN`**, **`NAME`**, **`NCNAME`**, **`NMTOKEN`**: Strings formatadas ou normalizadas para casos específicos.
+
+- **Binários**
+  - **`BASE64BINARY`**, **`HEXBINARY`**: Representações binárias em diferentes codificações.
+
+- **Outros**
+  - **`ANYURI`**: Representa um URI genérico.
+  - **`BOOLEAN`**: Tipo de dado booleano (`true` ou `false`).
+  - **`DATETIME`**, **`DATETIMESTAMP`**: Representam valores de data e hora.
+
+---
+
+## **Tokens de Relacionamento e Operadores**
+
+- **Relacionamentos**
+  - **`PROPERTY`**: Propriedades associadas a classes ou indivíduos.
+  - **`NAMESPACE`**: Espaço de nome para identificar propriedades ou classes.
+  - **`SPECIAL_SYMBOL`**: Representa símbolos especiais que podem aparecer nas expressões.
+
+- **Operadores Lógicos e Quantificadores**
+  - **`SOME`, `ONLY`, `EXACTLY`, `THAT`, `VALUE`, `ALL`, `MIN`, `MAX`**: Quantificadores usados para descrever restrições de propriedades.
+  - **`AND`, `OR`, `NOT`**: Operadores lógicos para construir expressões complexas.
+
+- **Comparações**
+  - **`GREATER_THAN_SIGN`, `LESS_THAN_SIGN`**: Operadores de comparação usados em propriedades ou expressões.
+
+---
+
+## **Tokens de Separação e Erros**
+
+- **Separação**
+  - **`COMMA`**: Usado para separar itens em listas ou expressões.
+  - **`EQUALS`**: Representa atribuições ou comparações.
+  
+- **Tratamento de Erros**
+  - **`INVALID_TOKEN`**: Representa um token inválido encontrado durante a análise.
+
+---
+
+## **Tokens Específicos de Classes e Indivíduos**
+
+- **`CLASSNAME`**: Identificador único para uma classe.
+- **`INDIVIDUAL`**: Representa indivíduos que pertencem a uma classe ou relação.
+
+---
+
+<p>Estes tokens fornecem uma base estruturada para a análise de uma linguagem formal usada para descrever classes, indivíduos e suas relações, permitindo um entendimento claro e organizado de uma gramática rica em semântica.</p>
 <h2>Considerações Finais</h2> 
 <p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p> <p>Para dúvidas ou contribuições, entre em contato com os integrantes da equipe ou acesse o repositório do projeto no GitHub.</p>
