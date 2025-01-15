@@ -161,3 +161,5 @@ Por “consistência”, entende-se que a declaração das classes seguem uma or
           <p> FunctionalComplex</p>
         </li>
       </ul>
+<h2>Considerações Finais</h2> 
+<p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p> <p>Para dúvidas ou contribuições, entre em contato com os integrantes da equipe ou acesse o repositório do projeto no GitHub.</p>
