@@ -161,6 +161,9 @@ Por “consistência”, entende-se que a declaração das classes seguem uma or
           <p> FunctionalComplex</p>
         </li>
       </ul>
+            
+---
+            
 <h2>Descrição dos Tokens do Analisador Sintático</h2>
 
 <p>Este texto descreve os tokens definidos no analisador sintático e suas funções no contexto da linguagem analisada. Os tokens são representações simbólicas que ajudam o parser a identificar e processar elementos da entrada de acordo com regras gramaticais.</p>
