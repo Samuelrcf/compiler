@@ -165,7 +165,6 @@ Por “consistência”, entende-se que a declaração das classes seguem uma or
 
 <p>Este texto descreve os tokens definidos no analisador sintático e suas funções no contexto da linguagem analisada. Os tokens são representações simbólicas que ajudam o parser a identificar e processar elementos da entrada de acordo com regras gramaticais.</p>
 
----
 
 ## **Tokens de Estruturação e Agrupamento**
 
@@ -176,7 +175,6 @@ Por “consistência”, entende-se que a declaração das classes seguem uma or
 - **`DISJOINTCLASSES`**: Declara que um conjunto de classes é mutuamente disjunto.
 - **`DISJOINTWITH`**: Especifica que duas classes são disjuntas.
 
----
 
 ## **Tokens para Agrupamento e Delimitação**
 
@@ -184,7 +182,6 @@ Por “consistência”, entende-se que a declaração das classes seguem uma or
 - **`LEFT_BRACKET`, `RIGHT_BRACKET`**: Colchetes para delimitar listas ou propriedades.
 - **`LEFT_BRACE`, `RIGHT_BRACE`**: Chaves para enumerar classes ou indivíduos.
 
----
 
 ## **Tokens de Dados Literais**
 
@@ -210,7 +207,6 @@ Estes tokens representam tipos de dados frequentemente usados em descrições de
   - **`BOOLEAN`**: Tipo de dado booleano (`true` ou `false`).
   - **`DATETIME`**, **`DATETIMESTAMP`**: Representam valores de data e hora.
 
----
 
 ## **Tokens de Relacionamento e Operadores**
 
@@ -226,7 +222,6 @@ Estes tokens representam tipos de dados frequentemente usados em descrições de
 - **Comparações**
   - **`GREATER_THAN_SIGN`, `LESS_THAN_SIGN`**: Operadores de comparação usados em propriedades ou expressões.
 
----
 
 ## **Tokens de Separação e Erros**
 
@@ -237,7 +232,6 @@ Estes tokens representam tipos de dados frequentemente usados em descrições de
 - **Tratamento de Erros**
   - **`INVALID_TOKEN`**: Representa um token inválido encontrado durante a análise.
 
----
 
 ## **Tokens Específicos de Classes e Indivíduos**
 
