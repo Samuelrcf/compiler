@@ -355,7 +355,7 @@ enumerated_class
   - Representa uma classe definida explicitamente por indivíduos.
 
 ---
-### **4. Classes Aninhadas
+### 4. Classes Aninhadas
 
 ```cpp
 nested
@@ -384,11 +384,6 @@ nested
 Neste exemplo:
 - **ClassA** é combinada com uma estrutura aninhada.
 - A estrutura aninhada contém **ClassB OR** outra descrição baseada na propriedade **PropertyX SOME ClassC**.
-
-#### **Observações adicionais:**
-- Utilizar classes aninhadas facilita a criação de modelos mais detalhados e precisos.
-- A complexidade é gerida por meio do uso de parênteses, o que garante clareza na definição das relações.
----
 
 ### **5. Descrições e Propriedades**
 ```cpp
