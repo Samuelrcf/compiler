@@ -1,20 +1,68 @@
 <h1>Implementação de um Analisador Sintático para OWL Manchester Syntax</h1>
+
+# Índice
+1. [Objetivo](#objetivo)
+2. [Equipe](#equipe)
+3. [Requisitos](#requisitos)
+   - [Instalação no Ubuntu (exemplo)](#instalação-no-ubuntu-exemplo)
+4. [Estrutura do Projeto](#estrutura-do-projeto)
+5. [Tutorial de Execução](#tutorial-de-execução)
+6. [Tipos de Classes](#tipos-de-classes)
+   - [Classe Primitiva](#classe-primitiva)
+   - [Classe Definida](#classe-definida)
+   - [Classe com Axioma de Fechamento](#classe-com-axioma-de-fechamento)
+   - [Classe com Descrições Aninhadas](#classe-com-descrições-aninhadas)
+   - [Classe Enumerada](#classe-enumerada)
+   - [Classe Coberta](#classe-coberta)
+   - [Classe Especial](#classe-especial)
+7. [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
+
+
 <h2>Objetivo</h2>
 <p>Especificar um analisador sintático somente para a análise de declarações de classes na linguagem OWL, de acordo com o formato Manchester Syntax, de acordo com as seguintes diretrizes:
 
 Elaborar uma gramática livre de contexto, sem ambiguidade, fatorada e sem recursividade à esquerda;
 
-Construir uma tabela de análise preditiva (para implementação manual) ou utilizar um gerador de analisador sintático com base em análise ascendente;
+Utilizar um gerador de analisador sintático com base em análise ascendente;
 
 Simular a leitura de uma especificação de classe como entrada para verificação da consistência da declaração da classe;
-
-Por “consistência”, entende-se que a declaração das classes seguem uma ordem que varia de acordo com o tipo de classe (p.ex.: separação dos nomes das classes por vírgulas nas classes enumeradas, disjunções entre as subclasses de uma classe coberta, separação de cláusulas pela palavra-chave AND ou por espaçamento, no caso das classes definidas e primitivas, respectivamente).</p>
 
 <h2>Equipe</h2>
 <ul>
   <li>Erick Patrick de Paula Morais Freitas</li>
   <li>Samuel Rogenes Carvalho Freire</li>
 </ul>
+
+## Requisitos
+
+Antes de começar, certifique-se de que você possui os seguintes requisitos:
+
+- **G++** (ou outro compilador C++ compatível)
+- **GDB** (para depuração)
+- **Make** (opcional, se você preferir usar o Make ao invés do CMake)
+- **CMake** (para construção do projeto)
+- **Flex** (Ferramenta de Analisador Léxico)
+- **Bison** (Ferramenta de Analisador Sintático)
+
+### Instalação no Ubuntu (exemplo)
+
+Se você não tem o Flex, Bison, CMake, Make, GCC ou GDB instalados, você pode instalar utilizando os seguintes comandos:
+
+```bash
+sudo apt-get update
+sudo apt-get install flex bison cmake make g++ gdb
+```
+
+## Estrutura do Projeto
+
+```plaintext
+.
+├── lexer.l                # Arquivo de definições do Flex (Analisador Léxico)
+├── Makefile               # Arquivo de configuração para o Make
+├── Parser.y               # Arquivo de definições do Bison (Analisador Sintático)
+├── symbol_table.h         # Cabeçalho da tabela de símbolos
+└── teste                  # Arquivo de texto com a linguagem **OWL2** no formato **Manchester Syntax** (usado para validar o lexer e gerar a tabela de símbolos)
+```
 
 <h2>Tutorial de Execução:</h2>
 <ol>
@@ -244,5 +292,192 @@ Estes tokens representam tipos de dados frequentemente usados em descrições de
 ---
 
 <p>Estes tokens fornecem uma base estruturada para a análise de uma linguagem formal usada para descrever classes, indivíduos e suas relações, permitindo um entendimento claro e organizado de uma gramática rica em semântica.</p>
+
+# Regras de Produção do Analisador Sintático
+
+As regras de produção definem a gramática do analisador sintático, especificando como os elementos básicos (tokens) podem ser combinados para formar estruturas válidas. A seguir, as principais regras de produção são detalhadas.
+
+---
+
+## **Regras Gerais**
+
+### **1. Declaração de Classes**
+```cpp
+classes
+    : class
+    | class classes
+    ;
+```
+- Define uma lista de classes. Cada classe pode ser declarada isoladamente ou em conjunto com outras.
+
+```cpp
+class
+    : CLASS CLASSNAME subclass_disjoint_individuals
+    | CLASS CLASSNAME equivalent_to {print_rule("Classe definida");}
+    | CLASS CLASSNAME class_closure_axiom {print_rule("Classe com axioma de fechamento");}
+    ;
+```
+- **Descrição:**
+  - Declara uma classe com diferentes propriedades:
+    - Subclasse ou indivíduos disjuntos.
+    - Classe equivalente a outra ou com axiomas de fechamento.
+
+---
+
+## **Subclasses e Disjunções**
+
+### **2. Subclasses e Indivíduos Disjuntos**
+```cpp
+subclass_disjoint_individuals
+    : SUBCLASSOF subc_properties optional_disjoint_individuals {print_rule("Classe primitiva");}
+    ;
+```
+- **Descrição:** Especifica uma subclasse com propriedades e, opcionalmente, disjunções de classes ou indivíduos.
+
+### **3. Indivíduos Opcionais e Classes Disjuntas**
+```cpp
+optional_disjoint_individuals
+    : DISJOINTCLASSES disjoint_classes optional_individuals
+    | optional_individuals
+    ;
+```
+- **Descrição:** Adiciona a possibilidade de declarar classes disjuntas e/ou indivíduos associados à classe.
+
+---
+
+## **Axiomas e Propriedades**
+
+### **4. Axioma de Fechamento**
+```cpp
+class_closure_axiom
+    : SUBCLASSOF descriptions
+    ;
+```
+- **Descrição:** Define uma classe com restrições baseadas em descrições.
+
+---
+
+## **Equivalência e Classes Enumeradas**
+
+### **5. Equivalência entre Classes**
+```cpp
+equivalent_to
+    : EQUIVALENTTO descriptions optional_individuals
+    | EQUIVALENTTO enumerated_class {print_rule("Classe enumerada");}
+    | EQUIVALENTTO class_list {print_rule("Classe coberta");}
+    ;
+```
+- **Descrição:**
+  - Define classes equivalentes usando:
+    - Descrições.
+    - Classes enumeradas (explicitamente listadas).
+    - Lista de classes (cobertura por conjunto de classes).
+
+### **6. Classe Enumerada**
+```cpp
+enumerated_class
+    : LEFT_BRACE class_list RIGHT_BRACE
+    ;
+```
+- **Descrição:** Representa uma classe definida por um conjunto explícito de membros.
+
+---
+
+## **Descrições e Propriedades**
+
+### **7. Lista de Descrições**
+```cpp
+descriptions
+    : description
+    | CLASSNAME AND descriptions
+    ;
+```
+- **Descrição:** Define uma ou mais descrições conectadas por operadores lógicos.
+
+### **8. Descrição de Classe**
+```cpp
+description
+    : LEFT_PARENTHESIS PROPERTY quantifier CLASSNAME RIGHT_PARENTHESIS
+    | LEFT_PARENTHESIS PROPERTY quantifier LEFT_PARENTHESIS PROPERTY quantifier CLASSNAME RIGHT_PARENTHESIS RIGHT_PARENTHESIS {print_rule("Classe com descrições aninhadas");}
+    | LEFT_PARENTHESIS PROPERTY quantifier NAMESPACE INTEGER LEFT_BRACKET GREATER_THAN_SIGN EQUALS CARDINAL RIGHT_BRACKET RIGHT_PARENTHESIS
+    | CLASSNAME COMMA subc_properties
+    ;
+```
+- **Descrição:** Define as propriedades e as restrições de uma classe.
+
+---
+
+## **Propriedades de Subclasses**
+
+### **9. Lista de Propriedades**
+```cpp
+subc_properties
+    : subc_property
+    | subc_properties COMMA subc_property
+    ;
+```
+- **Descrição:** Lista de propriedades relacionadas à subclasse.
+
+```cpp
+subc_property
+    : PROPERTY quantifier subc_namespace_type
+    | PROPERTY quantifier subc_logical_expression
+    ;
+```
+- **Descrição:** Define propriedades específicas com base em tipos de namespace ou expressões lógicas.
+
+---
+
+## **Indivíduos**
+
+### **10. Lista de Indivíduos**
+```cpp
+individuals
+    : individual
+    ;
+```
+```cpp
+individual
+    : INDIVIDUAL COMMA individual
+    | INDIVIDUAL
+    ;
+```
+- **Descrição:** Define um ou mais indivíduos associados a uma classe.
+
+---
+
+## **Quantificadores**
+
+### **11. Tipos de Quantificadores**
+```cpp
+quantifier
+    : SOME
+    | VALUE
+    | MIN
+    | MAX
+    | EXACTLY
+    | ONLY
+    ;
+```
+- **Descrição:** Define restrições como:
+  - **SOME**: Pelo menos um valor.
+  - **ONLY**: Apenas valores específicos.
+  - **EXACTLY**: Um número exato de valores.
+
+---
+
+## **Combinações Lógicas**
+
+### **12. Expressões Lógicas**
+```cpp
+subc_logical_expression
+    : subc_atomic
+    | subc_atomic OR subc_logical_expression
+    ;
+```
+- **Descrição:** Combina elementos de forma lógica usando operadores como `OR`.
+
+---
+
 <h2>Considerações Finais</h2> 
-<p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p> <p>Para dúvidas ou contribuições, entre em contato com os integrantes da equipe ou acesse o repositório do projeto no GitHub.</p>
+<p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p>
