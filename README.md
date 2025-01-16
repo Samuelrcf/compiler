@@ -9,6 +9,8 @@
 6. [Tutorial de Execução](#tutorial-de-execução)
 7. [Tipos de Classes](#tipos-de-classes)
 8. [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
+9. [Regras de Produção do Analisador Sintático](#regras-de-produção-do-analisador-sintático)
+10. [Considerações Finais](#considerações-finais)
 
 
 
@@ -283,9 +285,9 @@ Estes tokens representam tipos de dados frequentemente usados em descrições de
 - **`CLASSNAME`**: Identificador único para uma classe.
 - **`INDIVIDUAL`**: Representa indivíduos que pertencem a uma classe ou relação.
 
----
 
 <p>Estes tokens fornecem uma base estruturada para a análise de uma linguagem formal usada para descrever classes, indivíduos e suas relações, permitindo um entendimento claro e organizado de uma gramática rica em semântica.</p>
+---
 
 ## Regras de Produção do Analisador Sintático
 
