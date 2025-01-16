@@ -11,6 +11,9 @@ CustomPizza2
 Class: CheesyPizza
 EquivalentTo:
 Pizza and (hasTopping some CheeseTopping)
+SubClassOf:
+hasBase some PizzaBase,
+hasCaloricContent some xsd:integer
 Individuals:
 CheesyPizza1
 
@@ -28,10 +31,24 @@ hasTopping only (MozzarellaTopping or TomatoTopping)
 Class: SpicyPizza
 EquivalentTo:
 Pizza
-and (hasTopping some (hasSpiciness value Hot))
+and (hasTopping some (hasSpiciness value Hot1))
 
 Class: Spiciness
-EquivalentTo: {Hot , Medium , Mild}
+EquivalentTo: {Hot1 , Medium1 , Mild1}
 
 Class: Spiciness
 EquivalentTo: Hot or Medium or Mild
+
+Class: RegulatoryActivity
+EquivalentTo: ValueActivity
+and (bundles some (CnAObject or CoreObject or PoPObject))
+or (grants some CnAObject)
+or (consumes some CounterObject)
+or (transfers some (CoreObject or PoPObject))
+and (isAuthorityOf some Regulator)
+and (hasTransaction some ValueTransaction)
+and (bundles only (CnAObject or CoreObject or PoPObject))
+and (consumes only CounterObject)
+and (grants only CnAObject)
+and (isAuthorityOf only Regulator)
+and (transfers only (CoreObject or PoPObject))

@@ -13,6 +13,8 @@ int quantifiers = 0, relOp = 0, keyWord = 0, operators = 0, classes = 0, literal
 
 int andCount = 0, orCount = 0, notCount = 0, someCount = 0, allCount = 0, valueCount = 0, minCount = 0, maxCount = 0, exactlyCount = 0, thatCount = 0, onlyCount = 0, classCount = 0, equivalentToCount = 0, individualsCount = 0, subClassOfCount = 0, disjointClasses = 0, disjointWith = 0;
 
+int previous_token = 0; // Variável global para armazenar o token anterior
+
 SymbolTable symbolTable; 
 %}
 
@@ -437,7 +439,6 @@ SymbolTable symbolTable;
 [0-9]+[a-zA-Z!@#$%^&*()_+={}\[:;,.<>?/\\|~`-]+ {
     // Erro de token inválido
     cout << "[ERROR] Invalid Token: \"" << yytext << "\". Cardinal must not be followed by letters or invalid symbols. Line: " << yylineno << "\n";
-    return INVALID_TOKEN; // Retorna identificador para "Invalid Token"
 }
 
 [0-9]+ {

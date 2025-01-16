@@ -12,7 +12,7 @@ lexer: lex.yy.c parser.tab.c
 	$(CPP) lex.yy.c parser.tab.c -std=c++17 -o analyzer
 
 lex.yy.c: lexer.l 
-	$(FLEX) lexer.l   # Usando flex ao invés de flex++
+	$(FLEX) lexer.l   
 
 parser.tab.c: parser.y
 	$(BISON) -d parser.y 
