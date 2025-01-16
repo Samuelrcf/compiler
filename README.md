@@ -4,18 +4,12 @@
 1. [Objetivo](#objetivo)
 2. [Equipe](#equipe)
 3. [Requisitos](#requisitos)
-   - [Instalação no Ubuntu (exemplo)](#instalação-no-ubuntu-exemplo)
-4. [Estrutura do Projeto](#estrutura-do-projeto)
-5. [Tutorial de Execução](#tutorial-de-execução)
-6. [Tipos de Classes](#tipos-de-classes)
-   - [Classe Primitiva](#classe-primitiva)
-   - [Classe Definida](#classe-definida)
-   - [Classe com Axioma de Fechamento](#classe-com-axioma-de-fechamento)
-   - [Classe com Descrições Aninhadas](#classe-com-descrições-aninhadas)
-   - [Classe Enumerada](#classe-enumerada)
-   - [Classe Coberta](#classe-coberta)
-   - [Classe Especial](#classe-especial)
-7. [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
+4. [Instalação no Ubuntu (exemplo)](#instalação-no-ubuntu-exemplo)
+5. [Estrutura do Projeto](#estrutura-do-projeto)
+6. [Tutorial de Execução](#tutorial-de-execução)
+7. [Tipos de Classes](#tipos-de-classes)
+8. [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
+
 
 
 <h2>Objetivo</h2>
@@ -86,7 +80,7 @@ sudo apt-get install flex bison cmake make g++ gdb
   </li>
 </ol>
 
-<h2>Tipos de classes </h2>
+<h2>Tipos de classes</h2>
       <ul>
         <li>
           <h3> Classe Primitiva </h3>
