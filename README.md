@@ -256,9 +256,13 @@ Estes tokens representam tipos de dados frequentemente usados em descrições de
 <p>Estes tokens fornecem uma base estruturada para a análise de uma linguagem formal usada para descrever classes, indivíduos e suas relações, permitindo um entendimento claro e organizado de uma gramática rica em semântica.</p>
 ---
 
-## Regras de Produção do Analisador Sintático
+Aqui está uma reformulação mais clara e organizada do texto original, com base no código atualizado:
 
-As regras de produção definem a gramática do analisador sintático, especificando como os elementos básicos (tokens) podem ser combinados para formar estruturas válidas. A seguir, as principais regras de produção são detalhadas.
+---
+
+<h2>Regras de Produção do Analisador Sintático</h2>
+
+As regras de produção definem a gramática utilizada pelo analisador sintático. Elas especificam como tokens básicos podem ser combinados para formar construções válidas na linguagem. Abaixo estão as principais regras, acompanhadas de explicações detalhadas.
 
 ---
 
@@ -267,131 +271,158 @@ As regras de produção definem a gramática do analisador sintático, especific
 classes
     : class
     | class classes
+    | error {
+        printf("Erro na criação da classe. O analisador esperava a declaração 'Class:'.\n");
+        exit(EXIT_FAILURE);
+    }
     ;
 ```
-- Define uma lista de classes. Cada classe pode ser declarada isoladamente ou em conjunto com outras.
+- **Descrição:** 
+  - Representa uma lista de declarações de classes.
+  - Em caso de erro, uma mensagem é exibida.
 
 ```cpp
 class
-    : CLASS CLASSNAME subclass_disjoint_individuals
+    : CLASS CLASSNAME subclass_disjoint_individuals {print_rule("Classe primitiva");}
     | CLASS CLASSNAME equivalent_to {print_rule("Classe definida");}
-    | CLASS CLASSNAME class_closure_axiom {print_rule("Classe com axioma de fechamento");}
+    | CLASS error {
+        printf("Erro na criação da classe. O analisador esperava o nome de uma classe.\n");
+        exit(EXIT_FAILURE);
+    }
     ;
 ```
-- **Descrição:**
-  - Declara uma classe com diferentes propriedades:
-    - Subclasse ou indivíduos disjuntos.
-    - Classe equivalente a outra ou com axiomas de fechamento.
+- **Descrição:** 
+  - Define uma classe, que pode ser:
+    - Primitiva, com subclasses ou disjunções.
+    - Definida, com relações de equivalência.
+  - Trata erros como a ausência de um nome de classe.
 
 ---
 
-## **Subclasses e Disjunções**
-
-### **2. Subclasses e Indivíduos Disjuntos**
+### **2. Subclasses e Disjunções**
 ```cpp
 subclass_disjoint_individuals
-    : SUBCLASSOF subc_properties optional_disjoint_individuals {print_rule("Classe primitiva");}
+    : SUBCLASSOF descriptions optional_equivalent_to optional_disjoint_individuals
+    | SUBCLASSOF error {
+        printf("Erro na criação da classe primitiva. O analisador esperava a declaração 'SubClassOf:' seguido de descrições.\n");
+        exit(EXIT_FAILURE);
+    }
     ;
 ```
-- **Descrição:** Especifica uma subclasse com propriedades e, opcionalmente, disjunções de classes ou indivíduos.
+- **Descrição:** 
+  - Declara uma subclasse, com descrições opcionais de equivalência ou disjunções.
 
-### **3. Indivíduos Opcionais e Classes Disjuntas**
 ```cpp
 optional_disjoint_individuals
-    : DISJOINTCLASSES disjoint_classes optional_individuals
+    : DISJOINTCLASSES class_list_comma optional_individuals
     | optional_individuals
+    | DISJOINTCLASSES error {
+        printf("Erro na definição das classes disjuntas. O analisador esperava uma classe ou lista de classes.\n");
+        exit(EXIT_FAILURE);
+    }
     ;
 ```
-- **Descrição:** Adiciona a possibilidade de declarar classes disjuntas e/ou indivíduos associados à classe.
+- **Descrição:** 
+  - Permite a declaração de classes disjuntas e/ou indivíduos associados.
 
 ---
 
-## **Axiomas e Propriedades**
-
-### **4. Axioma de Fechamento**
-```cpp
-class_closure_axiom
-    : SUBCLASSOF descriptions
-    ;
-```
-- **Descrição:** Define uma classe com restrições baseadas em descrições.
-
----
-
-## **Equivalência e Classes Enumeradas**
-
-### **5. Equivalência entre Classes**
+### **3. Classes Definidas e Enumeradas**
 ```cpp
 equivalent_to
-    : EQUIVALENTTO descriptions optional_individuals
+    : EQUIVALENTTO descriptions optional_subclass_of optional_disjoint_individuals
     | EQUIVALENTTO enumerated_class {print_rule("Classe enumerada");}
-    | EQUIVALENTTO class_list {print_rule("Classe coberta");}
+    | EQUIVALENTTO class_list_or {print_rule("Classe coberta");}
+    | EQUIVALENTTO error {
+        printf("Erro na criação da classe definida. O analisador esperava a declaração 'EquivalentTo:' seguido de descrições.\n");
+        exit(EXIT_FAILURE);
+    }
     ;
 ```
-- **Descrição:**
-  - Define classes equivalentes usando:
-    - Descrições.
-    - Classes enumeradas (explicitamente listadas).
-    - Lista de classes (cobertura por conjunto de classes).
+- **Descrição:** 
+  - Define uma classe equivalente, com descrições, enumerações ou cobertura.
 
-### **6. Classe Enumerada**
 ```cpp
 enumerated_class
-    : LEFT_BRACE class_list RIGHT_BRACE
+    : LEFT_BRACE individual RIGHT_BRACE
+    | LEFT_BRACE error {
+        printf("Erro na criação da classe enumerada. O analisador esperava um indivíduo ou lista de indivíduos.\n");
+        exit(EXIT_FAILURE);
+    }
     ;
 ```
-- **Descrição:** Representa uma classe definida por um conjunto explícito de membros.
+- **Descrição:** 
+  - Representa uma classe definida explicitamente por indivíduos.
 
 ---
+### **4. Classes Aninhadas
 
-## **Descrições e Propriedades**
+```cpp
+nested
+    : LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS AND nested
+    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS OR nested
+    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS
+    | property_only_or_some_classname_or_description AND nested
+    | property_only_or_some_classname_or_description OR nested
+    | property_only_or_some_classname_or_description
+    | LEFT_PARENTHESIS property_only_description RIGHT_PARENTHESIS AND nested
+    ;
+```
 
-### **7. Lista de Descrições**
+- **Descrição:**  
+  Essa regra permite a definição de **classes aninhadas**, ou seja, classes que contêm outras classes ou descrições dentro de parênteses para expressar relações complexas ou hierarquias.  
+
+  - As classes podem ser combinadas utilizando operadores lógicos como **AND** e **OR**.
+  - Suportam descrições baseadas em propriedades, restrições ou combinações de classes.
+  - Permite estruturas aninhadas, que são ideais para representar relações sofisticadas entre elementos ou especificar axiomas compostos.
+
+#### **Exemplo de uso:**
+```text
+(ClassA AND (ClassB OR (PropertyX SOME ClassC)))
+```
+
+Neste exemplo:
+- **ClassA** é combinada com uma estrutura aninhada.
+- A estrutura aninhada contém **ClassB OR** outra descrição baseada na propriedade **PropertyX SOME ClassC**.
+
+#### **Observações adicionais:**
+- Utilizar classes aninhadas facilita a criação de modelos mais detalhados e precisos.
+- A complexidade é gerida por meio do uso de parênteses, o que garante clareza na definição das relações.
+---
+
+### **5. Descrições e Propriedades**
 ```cpp
 descriptions
     : description
-    | CLASSNAME AND descriptions
+    | CLASSNAME AND description
+    | CLASSNAME COMMA description
     ;
 ```
-- **Descrição:** Define uma ou mais descrições conectadas por operadores lógicos.
+- **Descrição:** 
+  - Lista de descrições conectadas por operadores lógicos.
 
-### **8. Descrição de Classe**
 ```cpp
 description
-    : LEFT_PARENTHESIS PROPERTY quantifier CLASSNAME RIGHT_PARENTHESIS
-    | LEFT_PARENTHESIS PROPERTY quantifier LEFT_PARENTHESIS PROPERTY quantifier CLASSNAME RIGHT_PARENTHESIS RIGHT_PARENTHESIS {print_rule("Classe com descrições aninhadas");}
-    | LEFT_PARENTHESIS PROPERTY quantifier NAMESPACE INTEGER LEFT_BRACKET GREATER_THAN_SIGN EQUALS CARDINAL RIGHT_BRACKET RIGHT_PARENTHESIS
-    | CLASSNAME COMMA subc_properties
+    : property_some_classname
+    | property_some_namespace
+    | nested {print_rule("Classe com descrições aninhadas");}
     ;
 ```
-- **Descrição:** Define as propriedades e as restrições de uma classe.
+- **Descrição:** 
+  - Define propriedades e restrições de uma classe, incluindo descrições aninhadas.
 
 ---
 
-## **Propriedades de Subclasses**
-
-### **9. Lista de Propriedades**
+### **6. Indivíduos**
 ```cpp
-subc_properties
-    : subc_property
-    | subc_properties COMMA subc_property
+optional_individuals
+    : INDIVIDUALS individuals
+    | INDIVIDUALS error {
+        printf("Erro na criação das instâncias. O analisador esperava um indivíduo ou lista de indivíduos.\n");
+        exit(EXIT_FAILURE);
+    }
     ;
 ```
-- **Descrição:** Lista de propriedades relacionadas à subclasse.
-
-```cpp
-subc_property
-    : PROPERTY quantifier subc_namespace_type
-    | PROPERTY quantifier subc_logical_expression
-    ;
-```
-- **Descrição:** Define propriedades específicas com base em tipos de namespace ou expressões lógicas.
-
----
-
-## **Indivíduos**
-
-### **10. Lista de Indivíduos**
 ```cpp
 individuals
     : individual
@@ -403,13 +434,12 @@ individual
     | INDIVIDUAL
     ;
 ```
-- **Descrição:** Define um ou mais indivíduos associados a uma classe.
+- **Descrição:** 
+  - Permite a declaração de indivíduos associados a uma classe.
 
 ---
 
-## **Quantificadores**
-
-### **11. Tipos de Quantificadores**
+### **7. Quantificadores**
 ```cpp
 quantifier
     : SOME
@@ -420,25 +450,27 @@ quantifier
     | ONLY
     ;
 ```
-- **Descrição:** Define restrições como:
-  - **SOME**: Pelo menos um valor.
-  - **ONLY**: Apenas valores específicos.
-  - **EXACTLY**: Um número exato de valores.
+- **Descrição:** 
+  - Define restrições quantitativas aplicadas a propriedades, como:
+    - **SOME**: Pelo menos um valor.
+    - **ONLY**: Apenas valores específicos.
 
 ---
 
-## **Combinações Lógicas**
-
-### **12. Expressões Lógicas**
+### **8. Expressões Lógicas**
 ```cpp
-subc_logical_expression
-    : subc_atomic
-    | subc_atomic OR subc_logical_expression
+nested
+    : LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS AND nested
+    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS OR nested
+    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS
     ;
 ```
-- **Descrição:** Combina elementos de forma lógica usando operadores como `OR`.
+- **Descrição:** 
+  - Permite combinações lógicas (e.g., AND, OR) para criar descrições mais complexas.
 
 ---
+
+Essa reformulação organiza o conteúdo em seções claras e adiciona explicações descritivas, mantendo o foco na clareza e estrutura lógica.
 
 <h2>Considerações Finais</h2> 
 <p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p>
