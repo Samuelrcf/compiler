@@ -287,13 +287,11 @@ Estes tokens representam tipos de dados frequentemente usados em descrições de
 
 <p>Estes tokens fornecem uma base estruturada para a análise de uma linguagem formal usada para descrever classes, indivíduos e suas relações, permitindo um entendimento claro e organizado de uma gramática rica em semântica.</p>
 
-# Regras de Produção do Analisador Sintático
+## Regras de Produção do Analisador Sintático
 
 As regras de produção definem a gramática do analisador sintático, especificando como os elementos básicos (tokens) podem ser combinados para formar estruturas válidas. A seguir, as principais regras de produção são detalhadas.
 
 ---
-
-## **Regras Gerais**
 
 ### **1. Declaração de Classes**
 ```cpp
