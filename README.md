@@ -76,7 +76,11 @@ sudo apt-get install flex bison cmake make g++ gdb
     <p>Agora para compilar o analisador usando o makeFile devemos digitar os seguintes comandos:</p>
     <code>make clean</code>
     <code>make</code>
-</li>
+  </li>
+  <li>
+    <p>Após compilar use o comando:</p>
+    <code>./analyzer < teste_analyzer.txt</code>
+  </li>
   <li>
     <p>O programa irá gerar a análise sintática e mostrar se teve algum erro ou não encontrado no processo de análise</p>
   </li>
