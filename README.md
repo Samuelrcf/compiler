@@ -309,26 +309,27 @@ class
 
 ### **2. Subclasses e Disjunções**
 ```cpp
-subclass_disjoint_individuals
-    : SUBCLASSOF descriptions optional_equivalent_to optional_disjoint_individuals
-    | SUBCLASSOF error {
-        printf("Erro na criação da classe primitiva. O analisador esperava a declaração 'SubClassOf:' seguido de descrições.\n");
-        exit(EXIT_FAILURE);
-    }
-    ;
+subclass_disjoint_individuals 
+        :   SUBCLASSOF descriptions optional_disjoint_with optional_equivalent_to optional_disjoint_individuals 
+        |   SUBCLASSOF CLASSNAME
+        |   SUBCLASSOF error {
+            printf("Erro na criação da classe primitiva. O analisador esperava a declaração 'SubClassOf:' seguido de descrições.\n");
+            exit(EXIT_FAILURE); 
+            }
+        ;
 ```
 - **Descrição:** 
   - Declara uma subclasse, com descrições opcionais de equivalência ou disjunções.
 
 ```cpp
 optional_disjoint_individuals
-    : DISJOINTCLASSES class_list_comma optional_individuals
-    | optional_individuals
-    | DISJOINTCLASSES error {
-        printf("Erro na definição das classes disjuntas. O analisador esperava uma classe ou lista de classes.\n");
-        exit(EXIT_FAILURE);
-    }
-    ;
+        :   DISJOINTCLASSES class_list_comma optional_individuals
+        |   optional_individuals
+        |   DISJOINTCLASSES error {
+            printf("Erro na definição das classes disjuntas. O analisador esperava uma classe ou uma lista de classes.\n");
+            exit(EXIT_FAILURE); 
+        }
+        ;
 ```
 - **Descrição:** 
   - Permite a declaração de classes disjuntas e/ou indivíduos associados.
@@ -340,7 +341,7 @@ optional_disjoint_individuals
 equivalent_to
         :   EQUIVALENTTO descriptions optional_subclass_of optional_disjoint_individuals 
         |   EQUIVALENTTO enumerated_individuals {print_rule("Classe enumerada");}
-        |   EQUIVALENTTO class_list_or {print_rule("Classe coberta");}
+        |   EQUIVALENTTO class_list_or optional_subclass_of optional_disjoint_individuals {print_rule("Classe coberta");}
         |   EQUIVALENTTO error {
             printf("Erro na criação da classe definida. O analisador esperava a declaração 'EquivalentTo:' seguido de descrições, lista de classes ou de uma enumeração de indivíduos.\n");
             exit(EXIT_FAILURE); 
@@ -376,7 +377,8 @@ nested
     | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS {print_rule("Classe com descrições aninhadas");}
     | property_only_or_some_classname_or_description AND nested 
     | property_only_or_some_classname_or_description OR nested
-    | property_only_or_some_classname_or_description 
+    | property_only_or_some_classname_or_description COMMA property_some_classname
+    | property_only_or_some_classname_or_description
     | LEFT_PARENTHESIS property_only_description RIGHT_PARENTHESIS AND nested
     | LEFT_PARENTHESIS property_some_description RIGHT_PARENTHESIS AND nested
     | LEFT_PARENTHESIS property_only_description RIGHT_PARENTHESIS OR nested
@@ -413,10 +415,18 @@ Neste exemplo:
 ### **5. Descrições e Propriedades**
 ```cpp
 descriptions
-    : description
-    | CLASSNAME AND description
-    | CLASSNAME COMMA description
-    ;
+        :   description
+        |   CLASSNAME AND description
+        |   CLASSNAME COMMA description
+        |   CLASSNAME AND error {
+            printf("Erro na criação das descrições. O analisador esperava uma descrição após o 'and'.\n");
+            exit(EXIT_FAILURE); 
+            }  
+        |   CLASSNAME COMMA error {
+            printf("Erro na criação das instâncias. O analisador esperava uma descrição após a vírgula.\n");
+            exit(EXIT_FAILURE); 
+            }             
+        ;
 ```
 - **Descrição:** 
   - Lista de descrições conectadas por operadores lógicos.
@@ -426,7 +436,6 @@ description
         :   property_some_classname 
         |   property_some_namespace
         |   nested 
-        |   property_only_or_some_classname_or_description COMMA nested
         ;
 ```
 - **Descrição:** 
@@ -452,9 +461,9 @@ individuals
 ```
 ```cpp
 individual
-    : INDIVIDUAL COMMA individual
-    | INDIVIDUAL
-    ;
+        :   INDIVIDUAL
+        |   INDIVIDUAL COMMA individual
+        ;
 ```
 - **Descrição:** 
   - Permite a declaração de indivíduos associados a uma classe.
@@ -487,19 +496,6 @@ only_or_some_or_quantifier
 - **Descrição:** 
   - **SOME**: Pelo menos um valor.
   - **ONLY**: Apenas valores específicos.
-
----
-
-### **8. Expressões Lógicas**
-```cpp
-nested
-    : LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS AND nested
-    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS OR nested
-    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS
-    ;
-```
-- **Descrição:** 
-  - Permite combinações lógicas (e.g., AND, OR) para criar descrições mais complexas.
 
 ---
 
