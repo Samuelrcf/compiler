@@ -1,51 +1,33 @@
-# Analisador Léxico para OWL2 (Manchester Syntax)
+<h1>Implementação de um Analisador Sintático para OWL Manchester Syntax</h1>
 
-## Índice
-
-1. [Descrição](#descrição)
-2. [Integrantes do Grupo](#integrantes-do-grupo)
-3. [Funcionalidades](#funcionalidades)
-4. [Requisitos](#requisitos)
-   - 4.1 [Instalação no Ubuntu](#instalação-no-ubuntu-exemplo)
+# Índice
+1. [Objetivo](#objetivo)
+2. [Equipe](#equipe)
+3. [Requisitos](#requisitos)
+4. [Instalação no Ubuntu (exemplo)](#instalação-no-ubuntu-exemplo)
 5. [Estrutura do Projeto](#estrutura-do-projeto)
-6. [Principais Componentes](#principais-componentes)
-7. [Tabela de Símbolos](#tabela-de-símbolos)
+6. [Tutorial de Execução](#tutorial-de-execução)
+7. [Tipos de Classes](#tipos-de-classes)
+8. [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
+9. [Regras de Produção do Analisador Sintático](#regras-de-produção-do-analisador-sintático)
+10. [Considerações Finais](#considerações-finais)
 
-## Descrição
-Este projeto tem como objetivo desenvolver um **analisador léxico** para a linguagem **OWL2** no formato **Manchester Syntax**, capaz de identificar e classificar tokens como palavras-chave, identificadores, operadores e literais. O analisador será responsável por reconhecer os elementos lexicais presentes em arquivos OWL2, garantindo conformidade com as regras da sintaxe e detectando possíveis erros. Essa ferramenta é essencial para validar a estrutura léxica de ontologias e prepará-las para uso em sistemas semânticos, como motores de inferência e integração de dados.
 
-## Integrantes do Grupo
-Erick Patrick de Paula Morais Freitas
 
-Samuel Rogenes Carvalho Freire
+<h2>Objetivo</h2>
+<p>Especificar um analisador sintático somente para a análise de declarações de classes na linguagem OWL, de acordo com o formato Manchester Syntax, de acordo com as seguintes diretrizes:
 
-## Funcionalidades
-As funcionalidades principais incluem:
+Elaborar uma gramática livre de contexto, sem ambiguidade, fatorada e sem recursividade à esquerda;
 
-### Identificação de Tokens:
+Utilizar um gerador de analisador sintático com base em análise ascendente;
 
-- Identifica operadores relacionais (e.g., AND, OR, NOT), quantificadores (e.g., SOME, ALL, VALUE), tipos de dados (rational, real, etc.), classes, palavras-chave, literais e outros símbolos especiais.
-- Detecta erros, como tokens inválidos ou desconhecidos, exibindo mensagens de erro no console.
-- Validação da conformidade com a Manchester Syntax.
+Simular a leitura de uma especificação de classe como entrada para verificação da consistência da declaração da classe;
 
-### Tabela de Símbolos:
-
-- Registra informações sobre cada token detectado, como o tipo, o valor, e a linha onde ocorreu.
-  
-### Contadores:
-
-- Mantém contadores para rastrear a frequência de cada tipo de token identificado durante a análise.
-
-### Execução:
-
-#### Processa uma entrada padrão (stdin) ou arquivo fornecido, analisa os tokens e exibe:
-- A contagem de cada tipo de token.
-- O conteúdo completo da tabela de símbolos.
-  
-### Estrutura do Código:
-
-Utiliza uma biblioteca personalizada (symbol_table.h) para gerenciar a tabela de símbolos.
-Aplica padrões regulares para definir regras de identificação de tokens no arquivo de entrada.
+<h2>Equipe</h2>
+<ul>
+  <li>Erick Patrick de Paula Morais Freitas</li>
+  <li>Samuel Rogenes Carvalho Freire</li>
+</ul>
 
 ## Requisitos
 
@@ -56,6 +38,7 @@ Antes de começar, certifique-se de que você possui os seguintes requisitos:
 - **Make** (opcional, se você preferir usar o Make ao invés do CMake)
 - **CMake** (para construção do projeto)
 - **Flex** (Ferramenta de Analisador Léxico)
+- **Bison** (Ferramenta de Analisador Sintático)
 
 ### Instalação no Ubuntu (exemplo)
 
@@ -70,82 +53,423 @@ sudo apt-get install flex bison cmake make g++ gdb
 
 ```plaintext
 .
-├── lex.yy.cc              # Código gerado pelo Flex (lexer)
-├── lexer.l                # Arquivo de definições do Flex (lexer)
+├── lexer.l                # Arquivo de definições do Flex (Analisador Léxico)
 ├── Makefile               # Arquivo de configuração para o Make
+├── Parser.y               # Arquivo de definições do Bison (Analisador Sintático)
 ├── symbol_table.h         # Cabeçalho da tabela de símbolos
 └── teste                  # Arquivo de texto com a linguagem **OWL2** no formato **Manchester Syntax** (usado para validar o lexer e gerar a tabela de símbolos)
 ```
 
+<h2>Tutorial de Execução:</h2>
+<ol>
+  <li>
+    <p>Certifique-se de estar em um ambiente Linux. Faça o donwload do projeto em formato zip ou utilizando git clone</p>
+    <p>Para baixar o zip é necessário apenas ir em code e depois em Download ZIP e após isso extrair a pasta</p>
+    <p>Se for utilizando o a ferramenta Git é necessário apenas ir no terminal e digitar o seguinte comando:</p>
+    <code>git clone git@github.com:Samuelrcf/compiler.git</code>
+    <p>Esse comando irá salvar o código em sua máquina local</p>
+  </li>
+  <li>
+    <p>Importante: é necessário ter o flex e o bison configurado no Visual Studio Code para poder funcionar a compilação do projeto</p>
+  </li>
+  <li>
+    <p>Agora para compilar o analisador usando o makeFile devemos digitar os seguintes comandos:</p>
+    <code>make clean</code>
+    <code>make</code>
+  </li>
+  <li>
+    <p>Após compilar use o comando:</p>
+    <code>./analyzer < teste_analyzer.txt</code>
+  </li>
+  <li>
+    <p>O programa irá gerar a análise sintática e mostrar se teve algum erro ou não encontrado no processo de análise</p>
+  </li>
+</ol>
+
+<h2>Tipos de classes</h2>
+<ul>
+  <li>
+    <h3>Classe Primitiva</h3>
+    <p>Classe cujos indivíduos podem herdar suas propriedades, mas indivíduos avulsos que tenham tais propriedades não podem ser classificados como membros dessas classes. No exemplo a seguir, é possível notar que a declaração deste tipo de classe inclui as definições de propriedades abaixo do axioma “SubClassOf”, ou seja, todos os indivíduos da classe primitiva Pizza serão também membros de tudo o que tem alguma base (PizzaBase) e tudo o que tem conteúdo calórico de algum valor inteiro. Todas as classes podem conter as seções “DisjointClasses” e “Individuals” em suas descrições.</p>
+    <h4>Exemplo</h4>
+    <pre><code>Class: Pizza
+SubClassOf:
+  hasBase some PizzaBase,
+  hasCaloricContent some xsd:integer
+
+DisjointClasses:
+  Pizza, PizzaBase, PizzaTopping
+
+Individuals:
+  CustomPizza1,
+  CustomPizza2
+</code></pre>
+  </li>
+  <li>
+    <h3>Classe Definida</h3>
+    <p>Classe que contém condições necessárias e suficientes em sua descrição. Em outros termos, esse tipo de classe não somente transfere suas características para seus indivíduos por herança, mas também permite inferir que indivíduos avulsos que tenham suas propriedades possam ser classificados como membros dessas classes. Uma classe definida normalmente tem uma seção definida pelo axioma “EquivalentTo:” sucedido por um conjunto de descrições. No exemplo abaixo, as classes CheesyPizza e HighCaloriePizza são definidas dessa forma.</p>
+    <h4>Exemplo</h4>
+    <pre><code>Class: CheesyPizza
+EquivalentTo:
+  Pizza and (hasTopping some CheeseTopping)
+
+Individuals:
+  CheesyPizza1
+</code></pre>
+  </li>
+  <li>
+    <h3>Classe com axioma de fechamento</h3>
+    <p>Uma classe com axioma de fechamento contém normalmente uma cláusula que “fecha” ou restringe as imagens de suas relações a um conjunto bem definido de classes ou de expressões. No exemplo abaixo, note que a classe MargheritaPizza, como domínio da relação ou “tripla RDF” pode estar conectada a duas outras classes de imagem (MozzarellaTopping e TomatoTopping) mediante a propriedade hasTopping. Entretanto, é necessário tornar explícito para o reasoner (motor de inferência lógica) que esse tipo de pizza só pode ter esses dois tipos de cobertura. Por isso, a expressão “hasTopping only (MozzarellaTopping or TomatoTopping)” é considerada um “fechamento” da imagem da relação/propriedade hasTopping, que é usada para descrever as relações que MargheritaPizza tem com possíveis coberturas (Toppings)</p>
+    <h4>Exemplo</h4>
+    <pre><code>Class: MargheritaPizza
+SubClassOf:
+  NamedPizza,
+  hasTopping some MozzarellaTopping,
+  hasTopping some TomatoTopping,
+  hasTopping only (MozzarellaTopping or TomatoTopping)
+</code></pre>
+  </li>
+  <li>
+    <h3>Classe com descrições aninhadas</h3>
+    <p>É possível que a imagem de uma propriedade que descreve uma classe não seja necessariamente uma outra classe, mas outra tripla composta de propriedade, quantificador e outra classe. Esses aninhamentos criam estruturas semelhantes a orações coordenadas ou subordinadas, como estudamos na gramática da Língua Portuguesa, por exemplo. Observe como a expressão “hasSpiciness value Hot” compreende a imagem (ou objeto) da propriedade “hasTopping”</p>
+    <h4>Exemplo</h4>
+    <pre><code>Class: SpicyPizza
+EquivalentTo:
+  Pizza
+  and (hasTopping some (hasSpiciness value Hot))
+</code></pre>
+  </li>
+  <li>
+    <h3>Classe Enumerada</h3>
+    <p>Algumas classes podem ser definidas a partir de uma enumeração de suas possíveis instâncias. Por exemplo, uma classe denominada “dias_da_semana” poderia conter apenas sete instâncias, sendo uma para cada dia. Uma outra classe denominada “planetas_do_sistema_solar” poderia conter apenas oito instâncias. Em OWL, há uma forma de se especificar esse tipo de classe. Note que, no exemplo abaixo, a classe Spiciness é definida com um conjunto de instâncias (Hot, Medium e Mild), que aparecem entre chaves.</p>
+    <h4>Exemplo</h4>
+    <pre><code>Class: Spiciness
+EquivalentTo: {Hot, Medium, Mild}
+</code></pre>
+  </li>
+  <li>
+    <h3>Classe Coberta</h3>
+    <p>Uma variação do exemplo anterior consiste em especificar uma classe como sendo a superposição de suas classes filhas. Ou seja, neste caso teríamos a classe Spiciness como sendo a classe mãe e as classes Hot, Mild e Mild como sendo classes filhas. A implicação lógica nesse caso é de que qualquer indivíduo pertencente à classe mãe precisa também estar dentro de alguma classe filha. Esse tipo de classe poderia ser especificada da seguinte forma:</p>
+    <h4>Exemplo</h4>
+    <pre><code>Class: Spiciness
+EquivalentTo: Hot or Medium or Mild
+</code></pre>
+  </li>
+  <li>
+    <h3>Classe Especial</h3>
+    <p>Uma classe que não satisfaz nenhuma das anteriores</p>
+    <h4>Exemplos</h4>
+    <pre><code>Class: PizzaBase
+DisjointClasses:
+  Pizza, PizzaBase, PizzaTopping
+
+Class: PizzaTopping
+DisjointClasses:
+  Pizza, PizzaBase, PizzaTopping
+
+Class: Evaluated
+EquivalentTo:
+  BrokerServiceProvider or Connector or CoreParticipant
+SubClassOf:
+  FunctionalComplex
+</code></pre>
+  </li>
+</ul>
+
+            
+---
+            
+<h2>Descrição dos Tokens do Analisador Sintático</h2>
+
+<p>Este texto descreve os tokens definidos no analisador sintático e suas funções no contexto da linguagem analisada. Os tokens são representações simbólicas que ajudam o parser a identificar e processar elementos da entrada de acordo com regras gramaticais.</p>
 
 
-## Desafio
-O desafio proposto é desenvolver um analisador léxico capaz de identificar e categorizar os seguintes elementos da linguagem OWL2:
+## **Tokens de Estruturação e Agrupamento**
 
-## Principais Componentes
-### Palavras Reservadas:
+- **`CLASS`**: Declara uma nova classe.
+- **`EQUIVALENTTO`**: Define equivalência entre classes ou conceitos.
+- **`INDIVIDUALS`**: Lista de indivíduos associados a uma classe.
+- **`SUBCLASSOF`**: Indica que uma classe é subclasse de outra.
+- **`DISJOINTCLASSES`**: Declara que um conjunto de classes é mutuamente disjunto.
+- **`DISJOINTWITH`**: Especifica que duas classes são disjuntas.
 
-AND, OR, NOT: Operadores relacionais.
 
-SOME, ALL, VALUE, MIN, MAX, EXACTLY, THAT: Quantificadores.
+## **Tokens para Agrupamento e Delimitação**
 
-ONLY, CLASS, EQUIVALENTTO, INDIVIDUALS, SUBCLASSOF, DISJOINTCLASSES: Palavras-chave para descrever classes e relações entre elas.
+- **`LEFT_PARENTHESIS`, `RIGHT_PARENTHESIS`**: Parênteses usados para agrupar expressões.
+- **`LEFT_BRACKET`, `RIGHT_BRACKET`**: Colchetes para delimitar listas ou propriedades.
+- **`LEFT_BRACE`, `RIGHT_BRACE`**: Chaves para enumerar classes ou indivíduos.
 
-### Tipos de Dados:
 
-Tipos como rational, real, decimal, string, integer, entre outros, são reconhecidos e contados conforme aparecem no código de entrada.
+## **Tokens de Dados Literais**
 
-### Classes:
+Estes tokens representam tipos de dados frequentemente usados em descrições de propriedades:
 
-começam com letra maiúscula e podem conter palavras compostas com ou sem separação por underline (ex.: ClassName, My_Class).
+- **Numéricos e Reais**
+  - **`RATIONAL`**: Número racional.
+  - **`REAL`**: Número real.
+  - **`DECIMAL`**, **`DOUBLE`**, **`FLOAT`**: Representam diferentes formatos de números com ponto flutuante.
+  - **`INT`**, **`INTEGER`**, **`SHORT`**, **`LONG`**: Representam números inteiros de diferentes precisões.
+  - **`POSITIVEINTEGER`**, **`NEGATIVEINTEGER`**, **`NONNEGATIVEINTEGER`**, **`NONPOSITIVEINTEGER`**: Variantes de inteiros com restrições de sinal.
 
-### Propriedades: 
+- **Strings e Literais**
+  - **`LANGSTRING`**: String com especificação de linguagem.
+  - **`PLAINLITERAL`**, **`XMLLITERAL`**, **`LITERAL`**: Tipos de literais para expressar valores textuais.
+  - **`NORMALIZEDSTRING`**, **`TOKEN`**, **`NAME`**, **`NCNAME`**, **`NMTOKEN`**: Strings formatadas ou normalizadas para casos específicos.
 
-começando com letra minúsculas, representando propriedades ou atributos de uma classe ou entidade (ex.: propertyName).
+- **Binários**
+  - **`BASE64BINARY`**, **`HEXBINARY`**: Representações binárias em diferentes codificações.
 
-### Indivíduos: 
+- **Outros**
+  - **`ANYURI`**: Representa um URI genérico.
+  - **`BOOLEAN`**: Tipo de dado booleano (`true` ou `false`).
+  - **`DATETIME`**, **`DATETIMESTAMP`**: Representam valores de data e hora.
 
-Identificadores que geralmente referenciam instâncias específicas de uma classe. Iniciam com letra maiúscula e terminam com números (ex.: Individual123).
 
-### Símbolos Especiais:
+## **Tokens de Relacionamento e Operadores**
 
-Símbolos como colchetes, chaves, parênteses, e outros caracteres especiais são tratados como tokens separados.
+- **Relacionamentos**
+  - **`PROPERTY`**: Propriedades associadas a classes ou indivíduos.
+  - **`NAMESPACE`**: Espaço de nome para identificar propriedades ou classes.
+  - **`SPECIAL_SYMBOL`**: Representa símbolos especiais que podem aparecer nas expressões.
 
-### Namespaces:
+- **Operadores Lógicos e Quantificadores**
+  - **`SOME`, `ONLY`, `EXACTLY`, `THAT`, `VALUE`, `ALL`, `MIN`, `MAX`**: Quantificadores usados para descrever restrições de propriedades.
+  - **`AND`, `OR`, `NOT`**: Operadores lógicos para construir expressões complexas.
 
-Identificados por uma sequência de 3 a 4 letras minúsculas seguidas por dois pontos.
+- **Comparações**
+  - **`GREATER_THAN_SIGN`, `LESS_THAN_SIGN`**: Operadores de comparação usados em propriedades ou expressões.
 
-## Tabela de Símbolos
 
-O analisador mantém uma tabela de símbolos onde são armazenados os tokens identificados (name), suas categorias (type) e o número da(s) linha(s) onde foram encontrados.
+## **Tokens de Separação e Erros**
 
-## Como usar o Analisador Léxico
-### Passo 1: Clonar o Repositório ou Fazer o Download
-Clone o repositório do github com o comando: 
-```plaintext
-git clone git@github.com:Samuelrcf/compiler.git
+- **Separação**
+  - **`COMMA`**: Usado para separar itens em listas ou expressões.
+  - **`EQUALS`**: Representa atribuições ou comparações.
+  
+- **Tratamento de Erros**
+  - **`INVALID_TOKEN`**: Representa um token inválido encontrado durante a análise.
+
+
+## **Tokens Específicos de Classes e Indivíduos**
+
+- **`CLASSNAME`**: Identificador único para uma classe.
+- **`INDIVIDUAL`**: Representa indivíduos que pertencem a uma classe ou relação.
+
+
+<p>Estes tokens fornecem uma base estruturada para a análise de uma linguagem formal usada para descrever classes, indivíduos e suas relações, permitindo um entendimento claro e organizado de uma gramática rica em semântica.</p>
+---
+
+Aqui está uma reformulação mais clara e organizada do texto original, com base no código atualizado:
+
+---
+
+<h2>Regras de Produção do Analisador Sintático</h2>
+
+As regras de produção definem a gramática utilizada pelo analisador sintático. Elas especificam como tokens básicos podem ser combinados para formar construções válidas na linguagem. Abaixo estão as principais regras, acompanhadas de explicações detalhadas.
+
+---
+
+### **1. Declaração de Classes**
+```cpp
+classes
+    : class
+    | class classes
+    | error {
+        printf("Erro na criação da classe. O analisador esperava a declaração 'Class:'.\n");
+        exit(EXIT_FAILURE);
+    }
+    ;
 ```
-ou faça o Download Zip.
+- **Descrição:** 
+  - Representa uma lista de declarações de classes.
+  - Em caso de erro, uma mensagem é exibida.
 
-### Passo 2: Configurar o Ambiente
-Certifique-se de estar em um ambiente Linux ou usando o WSL (Windows Subsystem for Linux).
-Abra o repositório no VSCode (ou outro editor/IDE de sua preferência que suporte C/C++).
+```cpp
+class
+    : CLASS CLASSNAME subclass_disjoint_individuals {print_rule("Classe primitiva");}
+    | CLASS CLASSNAME equivalent_to {print_rule("Classe definida");}
+    | CLASS error {
+        printf("Erro na criação da classe. O analisador esperava o nome de uma classe.\n");
+        exit(EXIT_FAILURE);
+    }
+    ;
+```
+- **Descrição:** 
+  - Define uma classe, que pode ser:
+    - Primitiva, com subclasses ou disjunções.
+    - Definida, com relações de equivalência.
+  - Trata erros como a ausência de um nome de classe.
 
-### Passo 3: Compilar e Executar o Analisador Léxico
-Abra um terminal na pasta onde o programa lexer.l está localizado e execute os seguintes comandos:
-#### Utilizado para processar o arquivo lexer.l
-```plaintext
-flex -+ lexer.l
+---
+
+### **2. Subclasses e Disjunções**
+```cpp
+subclass_disjoint_individuals
+    : SUBCLASSOF descriptions optional_equivalent_to optional_disjoint_individuals
+    | SUBCLASSOF error {
+        printf("Erro na criação da classe primitiva. O analisador esperava a declaração 'SubClassOf:' seguido de descrições.\n");
+        exit(EXIT_FAILURE);
+    }
+    ;
 ```
-#### Compila o arquivo lex.yy.cc gerado pelo Flex, usando o compilador g++
-```plaintext
-g++ -o lexer lex.yy.cc -lfl
+- **Descrição:** 
+  - Declara uma subclasse, com descrições opcionais de equivalência ou disjunções.
+
+```cpp
+optional_disjoint_individuals
+    : DISJOINTCLASSES class_list_comma optional_individuals
+    | optional_individuals
+    | DISJOINTCLASSES error {
+        printf("Erro na definição das classes disjuntas. O analisador esperava uma classe ou lista de classes.\n");
+        exit(EXIT_FAILURE);
+    }
+    ;
 ```
-#### Executa o programa gerado (lexer) e redireciona o conteúdo do arquivo teste como entrada para o analisador léxico
-```plaintext
-./lexer < teste
+- **Descrição:** 
+  - Permite a declaração de classes disjuntas e/ou indivíduos associados.
+
+---
+
+### **3. Classes Definidas e Enumeradas**
+```cpp
+equivalent_to
+    : EQUIVALENTTO descriptions optional_subclass_of optional_disjoint_individuals
+    | EQUIVALENTTO enumerated_class {print_rule("Classe enumerada");}
+    | EQUIVALENTTO class_list_or {print_rule("Classe coberta");}
+    | EQUIVALENTTO error {
+        printf("Erro na criação da classe definida. O analisador esperava a declaração 'EquivalentTo:' seguido de descrições.\n");
+        exit(EXIT_FAILURE);
+    }
+    ;
+```
+- **Descrição:** 
+  - Define uma classe equivalente, com descrições, enumerações ou cobertura.
+
+```cpp
+enumerated_class
+    : LEFT_BRACE individual RIGHT_BRACE
+    | LEFT_BRACE error {
+        printf("Erro na criação da classe enumerada. O analisador esperava um indivíduo ou lista de indivíduos.\n");
+        exit(EXIT_FAILURE);
+    }
+    ;
+```
+- **Descrição:** 
+  - Representa uma classe definida explicitamente por indivíduos.
+
+---
+### 4. Classes Aninhadas
+
+```cpp
+nested
+    : LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS AND nested
+    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS OR nested
+    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS
+    | property_only_or_some_classname_or_description AND nested
+    | property_only_or_some_classname_or_description OR nested
+    | property_only_or_some_classname_or_description
+    | LEFT_PARENTHESIS property_only_description RIGHT_PARENTHESIS AND nested
+    ;
 ```
 
-Substitua "teste" pelo nome do arquivo que contém o texto a ser analisado.
-Certifique-se de que o arquivo teste está na mesma pasta onde o programa foi compilado ou use o caminho completo para ele.
-Se aparecer algum erro durante a execução dos comandos, verifique se todas as dependências necessárias estão instaladas no sistema, como o Flex e o G++.
+- **Descrição:**  
+  Essa regra permite a definição de **classes aninhadas**, ou seja, classes que contêm outras classes ou descrições dentro de parênteses para expressar relações complexas ou hierarquias.  
+
+  - As classes podem ser combinadas utilizando operadores lógicos como **AND** e **OR**.
+  - Suportam descrições baseadas em propriedades, restrições ou combinações de classes.
+  - Permite estruturas aninhadas, que são ideais para representar relações sofisticadas entre elementos ou especificar axiomas compostos.
+
+#### **Exemplo de uso:**
+```text
+(ClassA AND (ClassB OR (PropertyX SOME ClassC)))
+```
+
+Neste exemplo:
+- **ClassA** é combinada com uma estrutura aninhada.
+- A estrutura aninhada contém **ClassB OR** outra descrição baseada na propriedade **PropertyX SOME ClassC**.
+
+### **5. Descrições e Propriedades**
+```cpp
+descriptions
+    : description
+    | CLASSNAME AND description
+    | CLASSNAME COMMA description
+    ;
+```
+- **Descrição:** 
+  - Lista de descrições conectadas por operadores lógicos.
+
+```cpp
+description
+    : property_some_classname
+    | property_some_namespace
+    | nested {print_rule("Classe com descrições aninhadas");}
+    ;
+```
+- **Descrição:** 
+  - Define propriedades e restrições de uma classe, incluindo descrições aninhadas.
+
+---
+
+### **6. Indivíduos**
+```cpp
+optional_individuals
+    : INDIVIDUALS individuals
+    | INDIVIDUALS error {
+        printf("Erro na criação das instâncias. O analisador esperava um indivíduo ou lista de indivíduos.\n");
+        exit(EXIT_FAILURE);
+    }
+    ;
+```
+```cpp
+individuals
+    : individual
+    ;
+```
+```cpp
+individual
+    : INDIVIDUAL COMMA individual
+    | INDIVIDUAL
+    ;
+```
+- **Descrição:** 
+  - Permite a declaração de indivíduos associados a uma classe.
+
+---
+
+### **7. Quantificadores**
+```cpp
+quantifier
+    : SOME
+    | VALUE
+    | MIN
+    | MAX
+    | EXACTLY
+    | ONLY
+    ;
+```
+- **Descrição:** 
+  - Define restrições quantitativas aplicadas a propriedades, como:
+    - **SOME**: Pelo menos um valor.
+    - **ONLY**: Apenas valores específicos.
+
+---
+
+### **8. Expressões Lógicas**
+```cpp
+nested
+    : LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS AND nested
+    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS OR nested
+    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS
+    ;
+```
+- **Descrição:** 
+  - Permite combinações lógicas (e.g., AND, OR) para criar descrições mais complexas.
+
+---
+
+Essa reformulação organiza o conteúdo em seções claras e adiciona explicações descritivas, mantendo o foco na clareza e estrutura lógica.
+
+<h2>Considerações Finais</h2> 
+<p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p>
