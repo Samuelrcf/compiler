@@ -338,26 +338,30 @@ optional_disjoint_individuals
 ### **3. Classes Definidas e Enumeradas**
 ```cpp
 equivalent_to
-    : EQUIVALENTTO descriptions optional_subclass_of optional_disjoint_individuals
-    | EQUIVALENTTO enumerated_class {print_rule("Classe enumerada");}
-    | EQUIVALENTTO class_list_or {print_rule("Classe coberta");}
-    | EQUIVALENTTO error {
-        printf("Erro na criação da classe definida. O analisador esperava a declaração 'EquivalentTo:' seguido de descrições.\n");
-        exit(EXIT_FAILURE);
-    }
-    ;
+        :   EQUIVALENTTO descriptions optional_subclass_of optional_disjoint_individuals 
+        |   EQUIVALENTTO enumerated_individuals {print_rule("Classe enumerada");}
+        |   EQUIVALENTTO class_list_or {print_rule("Classe coberta");}
+        |   EQUIVALENTTO error {
+            printf("Erro na criação da classe definida. O analisador esperava a declaração 'EquivalentTo:' seguido de descrições, lista de classes ou de uma enumeração de indivíduos.\n");
+            exit(EXIT_FAILURE); 
+            }
+        ;
 ```
 - **Descrição:** 
   - Define uma classe equivalente, com descrições, enumerações ou cobertura.
 
 ```cpp
-enumerated_class
-    : LEFT_BRACE individual RIGHT_BRACE
-    | LEFT_BRACE error {
-        printf("Erro na criação da classe enumerada. O analisador esperava um indivíduo ou lista de indivíduos.\n");
-        exit(EXIT_FAILURE);
-    }
-    ;
+enumerated_individuals
+        : LEFT_BRACE individual RIGHT_BRACE
+        | LEFT_BRACE error {
+            printf("Erro na criação da classe enumerada. O analisador esperava um indivíduo ou uma lista de indivíduos.\n");
+            exit(EXIT_FAILURE); 
+            }
+        | LEFT_BRACE individual error {
+            printf("Erro na criação da classe enumerada. O analisador esperava um colchete para fechar a lista de indivíduos.\n");
+            exit(EXIT_FAILURE); 
+            }
+        ;
 ```
 - **Descrição:** 
   - Representa uma classe definida explicitamente por indivíduos.
@@ -367,13 +371,26 @@ enumerated_class
 
 ```cpp
 nested
-    : LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS AND nested
+    : LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS AND nested 
     | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS OR nested
-    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS
-    | property_only_or_some_classname_or_description AND nested
+    | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS {print_rule("Classe com descrições aninhadas");}
+    | property_only_or_some_classname_or_description AND nested 
     | property_only_or_some_classname_or_description OR nested
-    | property_only_or_some_classname_or_description
+    | property_only_or_some_classname_or_description 
     | LEFT_PARENTHESIS property_only_description RIGHT_PARENTHESIS AND nested
+    | LEFT_PARENTHESIS property_some_description RIGHT_PARENTHESIS AND nested
+    | LEFT_PARENTHESIS property_only_description RIGHT_PARENTHESIS OR nested
+    | LEFT_PARENTHESIS property_some_description RIGHT_PARENTHESIS OR nested
+    | LEFT_PARENTHESIS property_only_description RIGHT_PARENTHESIS {print_rule("Classe com descrições aninhadas");}
+    | LEFT_PARENTHESIS property_some_description RIGHT_PARENTHESIS {print_rule("Classe com descrições aninhadas");}
+    | LEFT_PARENTHESIS throw_error_nested error {
+        printf("Erro na criação das descrições aninhadas. O analisador esperava fechamento do parêntese após as descrições.\n");
+        exit(EXIT_FAILURE); 
+        }
+    | LEFT_PARENTHESIS error {
+        printf("Erro na criação das descrições aninhadas. O analisador esperava descrições após a abertura do parêntese.\n");
+        exit(EXIT_FAILURE); 
+        }
     ;
 ```
 
@@ -406,10 +423,11 @@ descriptions
 
 ```cpp
 description
-    : property_some_classname
-    | property_some_namespace
-    | nested {print_rule("Classe com descrições aninhadas");}
-    ;
+        :   property_some_classname 
+        |   property_some_namespace
+        |   nested 
+        |   property_only_or_some_classname_or_description COMMA nested
+        ;
 ```
 - **Descrição:** 
   - Define propriedades e restrições de uma classe, incluindo descrições aninhadas.
@@ -419,12 +437,13 @@ description
 ### **6. Indivíduos**
 ```cpp
 optional_individuals
-    : INDIVIDUALS individuals
-    | INDIVIDUALS error {
-        printf("Erro na criação das instâncias. O analisador esperava um indivíduo ou lista de indivíduos.\n");
-        exit(EXIT_FAILURE);
-    }
-    ;
+        :   INDIVIDUALS individuals
+        |   INDIVIDUALS error {
+            printf("Erro na criação das instâncias. O analisador esperava um indivíduo ou uma lista de indivíduos.\n");
+            exit(EXIT_FAILURE); 
+            }
+        |   
+        ;
 ```
 ```cpp
 individuals
@@ -445,18 +464,29 @@ individual
 ### **7. Quantificadores**
 ```cpp
 quantifier
-    : SOME
-    | VALUE
     | MIN
     | MAX
     | EXACTLY
-    | ONLY
     ;
 ```
 - **Descrição:** 
   - Define restrições quantitativas aplicadas a propriedades, como:
     - **SOME**: Pelo menos um valor.
     - **ONLY**: Apenas valores específicos.
+
+---
+
+### **8. Some, Only e Quantificadores**
+```cpp
+only_or_some_or_quantifier
+        : SOME 
+        | quantifier CARDINAL
+        | ONLY
+        ;
+```
+- **Descrição:** 
+  - **SOME**: Pelo menos um valor.
+  - **ONLY**: Apenas valores específicos.
 
 ---
 
