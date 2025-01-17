@@ -503,7 +503,5 @@ nested
 
 ---
 
-Essa reformulação organiza o conteúdo em seções claras e adiciona explicações descritivas, mantendo o foco na clareza e estrutura lógica.
-
 <h2>Considerações Finais</h2> 
 <p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p>
