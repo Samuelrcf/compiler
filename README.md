@@ -78,7 +78,7 @@ sudo apt-get install flex bison cmake make g++ gdb
     <code>make</code>
   </li>
   <li>
-    <p>Após compilar use o comando:</p>
+    <p>Após compilar use o comando ./analyzer < teste_analyzer.txt, no caso do nosso projeto execute:</p>
     <code>./analyzer < teste_analyzer.txt</code>
   </li>
   <li>
@@ -287,13 +287,17 @@ classes
 
 ```cpp
 class
-    : CLASS CLASSNAME subclass_disjoint_individuals {print_rule("Classe primitiva");}
-    | CLASS CLASSNAME equivalent_to {print_rule("Classe definida");}
-    | CLASS error {
-        printf("Erro na criação da classe. O analisador esperava o nome de uma classe.\n");
-        exit(EXIT_FAILURE);
-    }
-    ;
+        : CLASS CLASSNAME subclass_disjoint_individuals 
+        | CLASS CLASSNAME equivalent_to {print_rule("Classe definida\n");}
+        | CLASS CLASSNAME error {
+            printf("Erro na criação da classe. O analisador esperava a declaração 'SubClassOf:' ou 'EquivalentTo:'.\n");
+            exit(EXIT_FAILURE); 
+        }
+        | CLASS error {
+            printf("Erro na criação da classe. O analisador esperava o nome de uma classe.\n");
+            exit(EXIT_FAILURE); 
+        }
+        ;
 ```
 - **Descrição:** 
   - Define uma classe, que pode ser:
