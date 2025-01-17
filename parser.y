@@ -25,6 +25,7 @@ extern int yylineno;
 %token SHORT STRING TOKEN UNSIGNEDBYTE UNSIGNEDINT UNSIGNEDLONG UNSIGNEDSHORT INDIVIDUAL CLASSNAME
 %token PROPERTY NAMESPACE CARDINAL SOME ONLY THAT EXACTLY MAX MIN VALUE ALL NOT OR AND COMMA
 
+
 %%
 
 classes
@@ -50,12 +51,18 @@ class
         ;
 
 subclass_disjoint_individuals 
-        :   SUBCLASSOF descriptions optional_equivalent_to optional_disjoint_individuals 
+        :   SUBCLASSOF descriptions optional_disjoint_with optional_equivalent_to optional_disjoint_individuals 
+        |   SUBCLASSOF CLASSNAME
         |   SUBCLASSOF error {
             printf("Erro na criação da classe primitiva. O analisador esperava a declaração 'SubClassOf:' seguido de descrições.\n");
             exit(EXIT_FAILURE); 
             }
         ;
+
+optional_disjoint_with
+    : DISJOINTWITH CLASSNAME
+    |
+    ;
 
 optional_disjoint_individuals
         :   DISJOINTCLASSES class_list_comma optional_individuals
@@ -69,7 +76,7 @@ optional_disjoint_individuals
 equivalent_to
         :   EQUIVALENTTO descriptions optional_subclass_of optional_disjoint_individuals 
         |   EQUIVALENTTO enumerated_individuals {print_rule("Classe enumerada");}
-        |   EQUIVALENTTO class_list_or {print_rule("Classe coberta");}
+        |   EQUIVALENTTO class_list_or optional_subclass_of optional_disjoint_individuals {print_rule("Classe coberta");}
         |   EQUIVALENTTO error {
             printf("Erro na criação da classe definida. O analisador esperava a declaração 'EquivalentTo:' seguido de descrições, lista de classes ou de uma enumeração de indivíduos.\n");
             exit(EXIT_FAILURE); 
@@ -78,6 +85,7 @@ equivalent_to
 
 optional_subclass_of
         :   SUBCLASSOF descriptions
+        |   SUBCLASSOF CLASSNAME
         |   SUBCLASSOF error {
             printf("Erro na criação da classe definida. O analisador esperava a declaração 'SubClassOf:' seguido de descrições.\n");
             exit(EXIT_FAILURE); 
@@ -133,11 +141,12 @@ description
         :   property_some_classname 
         |   property_some_namespace
         |   nested 
-        |   property_only_or_some_classname_or_description COMMA nested
         ;
 
 property_some_classname
-        : PROPERTY ONLY CLASSNAME
+        : PROPERTY ONLY CLASSNAME COMMA property_some_classname
+        | PROPERTY ONLY CLASSNAME AND property_some_classname
+        | PROPERTY ONLY CLASSNAME 
         | PROPERTY quantifier CARDINAL CLASSNAME
         | PROPERTY quantifier CARDINAL CLASSNAME COMMA property_some_classname
         | PROPERTY quantifier CARDINAL CLASSNAME AND property_some_classname
@@ -146,6 +155,8 @@ property_some_classname
         | PROPERTY SOME CLASSNAME COMMA property_some_classname
         | PROPERTY SOME CLASSNAME AND property_some_classname
         | PROPERTY SOME subc_namespace_type property_some_classname
+        | PROPERTY PROPERTY only_or_some_or_quantifier CLASSNAME COMMA property_some_classname
+        | PROPERTY PROPERTY only_or_some_or_quantifier CLASSNAME
         | property_only_description property_some_classname {print_rule("Classe com axioma de fechamento");}
         | property_only_description {print_rule("Classe com axioma de fechamento");}
         | PROPERTY SOME CLASSNAME AND error {
@@ -210,6 +221,8 @@ property_some_description
 
 property_only_or_some_classname_or_description
         : LEFT_PARENTHESIS PROPERTY only_or_some_or_quantifier CLASSNAME RIGHT_PARENTHESIS
+        | LEFT_PARENTHESIS PROPERTY SOME subc_namespace_type RIGHT_PARENTHESIS
+        | LEFT_PARENTHESIS PROPERTY quantifier CARDINAL subc_namespace_type RIGHT_PARENTHESIS
         | LEFT_PARENTHESIS PROPERTY SOME LEFT_PARENTHESIS PROPERTY VALUE INDIVIDUAL RIGHT_PARENTHESIS RIGHT_PARENTHESIS {print_rule("Classe com descrições aninhadas");}
         | LEFT_PARENTHESIS PROPERTY SOME LEFT_PARENTHESIS PROPERTY VALUE INDIVIDUAL RIGHT_PARENTHESIS error {
             printf("Erro. O analisador esperava o fechamento de parêntese.\n");
@@ -243,7 +256,8 @@ nested
     | LEFT_PARENTHESIS nested_builds RIGHT_PARENTHESIS {print_rule("Classe com descrições aninhadas");}
     | property_only_or_some_classname_or_description AND nested 
     | property_only_or_some_classname_or_description OR nested
-    | property_only_or_some_classname_or_description 
+    | property_only_or_some_classname_or_description COMMA property_some_classname
+    | property_only_or_some_classname_or_description
     | LEFT_PARENTHESIS property_only_description RIGHT_PARENTHESIS AND nested
     | LEFT_PARENTHESIS property_some_description RIGHT_PARENTHESIS AND nested
     | LEFT_PARENTHESIS property_only_description RIGHT_PARENTHESIS OR nested
@@ -269,9 +283,11 @@ throw_error_nested
 nested_builds
     : LEFT_PARENTHESIS PROPERTY only_or_some_or_quantifier nested_builds RIGHT_PARENTHESIS
     | LEFT_PARENTHESIS PROPERTY only_or_some_or_quantifier nested_builds RIGHT_PARENTHESIS OR nested_builds
+    | LEFT_PARENTHESIS PROPERTY only_or_some_or_quantifier nested_builds RIGHT_PARENTHESIS AND nested_builds
     | LEFT_PARENTHESIS class_list_or RIGHT_PARENTHESIS
     | LEFT_PARENTHESIS PROPERTY only_or_some_or_quantifier CLASSNAME RIGHT_PARENTHESIS
     | LEFT_PARENTHESIS PROPERTY only_or_some_or_quantifier CLASSNAME RIGHT_PARENTHESIS OR nested_builds
+    | LEFT_PARENTHESIS PROPERTY only_or_some_or_quantifier CLASSNAME RIGHT_PARENTHESIS AND nested_builds
     | LEFT_PARENTHESIS PROPERTY only_or_some_or_quantifier throw_error_nested_builds2 error {
         printf("Erro na criação das descrições aninhadas. O analisador esperava um fechamento de parêntese.\n");
         exit(EXIT_FAILURE); 

@@ -107,7 +107,7 @@ SohoPizza2
 Class: SpicyPizza
 EquivalentTo:
 Pizza
-and (hasTopping some (hasSpiciness value Hot))
+and (hasTopping some (hasSpiciness value Hot1))
 Class: VegetarianPizza
 EquivalentTo:
 Pizza
