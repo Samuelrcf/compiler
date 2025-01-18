@@ -501,7 +501,7 @@ only_or_some_or_quantifier
 ---
 
 <h2>Saída do Analisador Sintático</h2>
-<p>Para cada classe identificada pelo analisador sintático será exibido uma mensagem com o tipo da classe identificada. Por exemplo:</p>
+<p>Para cada classe identificada pelo analisador sintático será exibido uma mensagem com o tipo da classe identificada e suas características(se houver). Por exemplo:</p>
 <P><strong>Entrada:</strong></P>
 <pre><code>Class: Pizza
 SubClassOf:
