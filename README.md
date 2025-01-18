@@ -514,6 +514,30 @@ CustomPizza1,
 CustomPizza2</code></pre>
 <P><strong>Saída:</strong></P>
 <pre><code>Regra aplicada: Classe primitiva</code></pre>
+<p>Em casos de erro, ou seja, quando a entrada não está descrita de acordo com a sintaxe da linguagem, é exibido uma mensagem de erro contendo o TOKEN, a linha e uma mensagem explicativa. Por exemplo:</p>
+<P><strong>Entrada:</strong></P>
+<pre><code>...
+Class: SpicyPizza
+EquivalentTo:
+Pizza
+and (hasTopping some (hasSpiciness value Hot1))
+Class: VegetarianPizza
+EquivalentTo:
+Pizza
+and (hasTopping only
+(CheeseTopping or VegetableTopping))
+Class: PizzaBase
+DisjointClasses:
+Pizza, PizzaBase, PizzaTopping
+Class: PizzaTopping
+DisjointClasses:
+Pizza, PizzaBase, PizzaTopping
+Class: Spiciness
+EquivalentTo:
+{Hot , Medium , Mild}</code></pre>
+<P><strong>Saída:</strong></P>
+<pre><code>Erro sintático: TOKEN "Disjoint Classes:" (linha 117)
+Erro na criação da classe. O analisador esperava a declarção 'SubClassOf:' ou 'EquivalentTo:'.</code></pre>
 
 <h2>Considerações Finais</h2> 
 <p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p>
