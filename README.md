@@ -514,7 +514,7 @@ CustomPizza1,
 CustomPizza2</code></pre>
 <P><strong>Saída:</strong></P>
 <pre><code>Regra aplicada: Classe primitiva</code></pre>
-<p>Em casos de erro, ou seja, quando a entrada não está descrita de acordo com a sintaxe da linguagem, é exibido uma mensagem de erro contendo o TOKEN, a linha e uma mensagem explicativa. Por exemplo:</p>
+<p>Em casos de erro, ou seja, quando a entrada não está descrita de acordo com a sintaxe da linguagem, é exibido uma mensagem de erro contendo o TOKEN, a linha em que ocorreu o erro e uma mensagem explicativa. Por exemplo:</p>
 <P><strong>Entrada:</strong></P>
 <pre><code>...
 Class: SpicyPizza
