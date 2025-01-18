@@ -10,7 +10,8 @@
 7. [Tipos de Classes](#tipos-de-classes)
 8. [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
 9. [Regras de Produção do Analisador Sintático](#regras-de-produção-do-analisador-sintático)
-10. [Considerações Finais](#considerações-finais)
+10. [Saída do Analisador Sintático](#saída-do-analisador-sintático)
+11. [Considerações Finais](#considerações-finais)
 
 
 
@@ -498,6 +499,21 @@ only_or_some_or_quantifier
   - **ONLY**: Apenas valores específicos.
 
 ---
+
+<h2>Saída do Analisador Sintático</h2>
+<p>Para cada classe identificada pelo analisador sintático será exibido uma mensagem com o tipo da classe identificada. Por exemplo:</p>
+<P><strong>Entrada:</strong></P>
+<pre><code>Class: Pizza
+SubClassOf:
+hasBase some PizzaBase,
+hasCaloricContent some xsd:integer
+DisjointClasses:
+Pizza, PizzaBase, PizzaTopping
+Individuals:
+CustomPizza1,
+CustomPizza2</code></pre>
+<P><strong>Saída:</strong></P>
+<pre><code>Regra aplicada: Classe primitiva</code></pre>
 
 <h2>Considerações Finais</h2> 
 <p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p>
