@@ -346,6 +346,12 @@ SymbolTable symbolTable;
     return UNSIGNEDSHORT; // Retorna identificador para "unsignedShort"
 }
 
+"inverse" {
+    symbolTable.addSymbol("inverse", "Type", yylineno);
+    unsignedShort++;
+    return INVERSE; // Retorna identificador para "unsignedShort"
+}
+
 "," {
     symbols++;
     symbolTable.addSymbol("comma", "Special Symbol", yylineno);
@@ -415,12 +421,14 @@ SymbolTable symbolTable;
 [A-Z][a-zA-Z]*(_[A-Z][a-zA-Z]*)* {
     classes++;
     symbolTable.addSymbol(yytext, "Class", yylineno);
+    yylval.str = strdup(yytext);
     return CLASSNAME; // Retorna identificador para "Class Name"
 }
 
 [a-z][A-Za-z]* {
     properties++;
     symbolTable.addSymbol(yytext, "Property", yylineno);
+    yylval.str = strdup(yytext);
     return PROPERTY; // Retorna identificador para "Property"
 }
 
