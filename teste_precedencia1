@@ -1,0 +1,11 @@
+Class: Pizza
+EquivalentTo:
+hasBase some PizzaBase
+SubClassOf:
+hasBase some PizzaBase,
+hasCaloricContent some xsd:integer
+DisjointClasses:
+PizzaBase, PizzaTopping
+Individuals:
+CustomPizza1,
+CustomPizza2

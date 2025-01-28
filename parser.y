@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <cstring>
-#include <set>
+#include <unordered_set>
 
 using namespace std;
 
@@ -17,9 +17,15 @@ extern int yylineno;
 
 std::vector<std::string> classname_list;
 
+std::vector<std::string> classname_list_for_only;
+
 std::vector<std::string> property_list;
 
+std::vector<std::pair<std::string, int>> possible_data_property_list;
+
 std::vector<std::pair<std::string, int>> data_property_list;
+
+std::vector<std::pair<std::string, int>> possible_object_property_list;
 
 std::vector<std::pair<std::string, int>> object_property_list;
 
@@ -28,9 +34,11 @@ bool nested = false;
 bool covered = false;
 bool enumerated = false;
 
-bool precedence = false;
+bool precedence_some = false;
 
 bool precedence_only = false;
+
+bool precedence_classname = false;
 %}
 
 %union {
@@ -45,7 +53,7 @@ bool precedence_only = false;
 %token DATETIME DATETIMESTAMP DECIMAL DOUBLE FLOAT HEXBINARY INT INTEGER LANGUAGE LONG NAME NCNAME EQUALS RIGHT_BRACE LEFT_BRACE
 %token NEGATIVEINTEGER NMTOKEN NONNEGATIVEINTEGER NONPOSITIVEINTEGER NORMALIZEDSTRING POSITIVEINTEGER
 %token SHORT STRING TOKEN UNSIGNEDBYTE UNSIGNEDINT UNSIGNEDLONG UNSIGNEDSHORT INDIVIDUAL 
-%token NAMESPACE CARDINAL SOME ONLY THAT EXACTLY MAX MIN VALUE ALL NOT OR AND COMMA INVERSE
+%token NAMESPACE CARDINAL SOME ONLY THAT EXACTLY MAX MIN VALUE ALL NOT OR AND COMMA INVERSE DOT
 
 %%
 
@@ -61,8 +69,25 @@ classes
 class
         : CLASS CLASSNAME subclass_disjoint_individuals
         { 
+            if (precedence_classname == true) {
+                // mover itens de possible_data_property_list para data_property_list
+                if (!possible_data_property_list.empty()) {
+                    data_property_list.insert(data_property_list.end(),
+                                            possible_data_property_list.begin(),
+                                            possible_data_property_list.end());
+                    possible_data_property_list.clear(); // limpar a lista
+                }
+
+                // mover itens de possible_object_property_list para object_property_list
+                if (!possible_object_property_list.empty()) {
+                    object_property_list.insert(object_property_list.end(),
+                                                possible_object_property_list.begin(),
+                                                possible_object_property_list.end());
+                    possible_object_property_list.clear(); // limpar a lista 
+                }
+            }
             precedence_only = false;
-            precedence = false;
+            precedence_some = false;
             if (closure && !covered && !nested && !enumerated) {
                 std::cout << $2 << ": Classe primitiva com axioma de fechamento" << std::endl << std::endl;
                 closure = false;
@@ -105,8 +130,25 @@ class
 
         | CLASS CLASSNAME equivalent_to
         { 
+            if (precedence_classname == true) {
+                // mover itens de possible_data_property_list para data_property_list
+                if (!possible_data_property_list.empty()) {
+                    data_property_list.insert(data_property_list.end(),
+                                            possible_data_property_list.begin(),
+                                            possible_data_property_list.end());
+                    possible_data_property_list.clear(); // limpar a lista
+                }
+
+                // mover itens de possible_object_property_list para object_property_list
+                if (!possible_object_property_list.empty()) {
+                    object_property_list.insert(object_property_list.end(),
+                                                possible_object_property_list.begin(),
+                                                possible_object_property_list.end());
+                    possible_object_property_list.clear(); // limpar a lista 
+                }
+            }
             precedence_only = false;
-            precedence = false;
+            precedence_some = false;
             if (closure && !covered && !nested && !enumerated) {
                 std::cout << $2 << ": Classe definida com axioma de fechamento" << std::endl << std::endl;
                 closure = false;
@@ -158,7 +200,7 @@ subclass_disjoint_individuals
         :   SUBCLASSOF descriptions optional_disjoint_with optional_disjoint_individuals
         {
             if (!classname_list.empty() && precedence_only == true) {
-                std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente." << std::endl;
+                std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente. Linha " << yylineno << std::endl;
                 exit(EXIT_FAILURE); 
             }
             classname_list.clear();
@@ -189,7 +231,7 @@ equivalent_to
         :   EQUIVALENTTO descriptions optional_subclass_of optional_disjoint_individuals 
         {
             if (!classname_list.empty() && precedence_only == true) {
-                std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente." << std::endl;
+                std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente. Linha " << yylineno << std::endl;
                 exit(EXIT_FAILURE); 
             }
             classname_list.clear();
@@ -198,7 +240,7 @@ equivalent_to
         |   EQUIVALENTTO enumerated_individuals optional_subclass_of optional_disjoint_individuals 
         {
             if (!classname_list.empty() && precedence_only == true) {
-                std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente." << std::endl;
+                std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente. Linha " << yylineno << std::endl;
                 exit(EXIT_FAILURE); 
             }
             enumerated = true;
@@ -208,7 +250,7 @@ equivalent_to
         |   EQUIVALENTTO class_list_or optional_subclass_of optional_disjoint_individuals
         {
             if (!classname_list.empty() && precedence_only == true) {
-                std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente." << std::endl;
+                std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente. Linha " << yylineno << std::endl;
                 exit(EXIT_FAILURE); 
             }
             covered = true;
@@ -255,7 +297,13 @@ optional_individuals
 descriptions
         :   description
         |   CLASSNAME AND description
+        {
+            precedence_classname = true;
+        }
         |   CLASSNAME COMMA description
+        {
+            precedence_classname = true;
+        }
         |   CLASSNAME AND error {
             printf("Erro na criação das descrições. O analisador esperava uma descrição após o 'and'.\n");
             exit(EXIT_FAILURE); 
@@ -275,21 +323,57 @@ description
 general_descriptions
         : PROPERTY ONLY CLASSNAME COMMA general_descriptions
         {
-            if(precedence == true){
+            if(precedence_some == true){
                 std::string last_element = property_list.back();
                 if(last_element == $1){
-                    std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente." << std::endl;
+                    std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente. Linha " << yylineno << std::endl;
                     exit(EXIT_FAILURE); 
+                }
+                std::string current_classname = std::string($3);
+                if (!classname_list.empty()) {
+                    bool found = false;
+
+                    for (auto it = classname_list.begin(); it != classname_list.end(); ++it) {
+                        if (*it == current_classname) {
+                            classname_list.erase(it);
+                            found = true; 
+                            closure = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento. Linha " << yylineno << std::endl;
+                        exit(EXIT_FAILURE); 
+                    }
                 }
             }
         }
         | PROPERTY ONLY CLASSNAME AND general_descriptions
         {
-            if(precedence == true){
+            if(precedence_some == true){
                 std::string last_element = property_list.back();
-                if(last_element == $1){
-                    std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente." << std::endl;
+                if(last_element == $1){ 
+                    std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente. Linha " << yylineno << std::endl;
                     exit(EXIT_FAILURE); 
+                }
+                std::string current_classname = std::string($3);
+                if (!classname_list.empty()) {
+                    bool found = false;
+
+                    for (auto it = classname_list.begin(); it != classname_list.end(); ++it) {
+                        if (*it == current_classname) {
+                            classname_list.erase(it);
+                            found = true; 
+                            closure = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento. Linha " << yylineno << std::endl;
+                        exit(EXIT_FAILURE); 
+                    }
                 }
             }
         }
@@ -297,8 +381,12 @@ general_descriptions
         | PROPERTY quantifier CARDINAL CLASSNAME COMMA general_descriptions
         | PROPERTY quantifier CARDINAL CLASSNAME AND general_descriptions
         | PROPERTY SOME subc_namespace_type
+        {
+            possible_data_property_list.emplace_back($1, yylineno);
+        }
         | PROPERTY SOME CLASSNAME COMMA PROPERTY ONLY CLASSNAME 
         {
+            possible_object_property_list.emplace_back($1, yylineno);
             precedence_only = true;
             std::string property1 = std::string($1);
             std::string property2 = std::string($5);
@@ -306,9 +394,9 @@ general_descriptions
             if(property1 == property2){
                 property_list.push_back($1);
 
-                // Comparando os dois CLASSNAME
+                // comparando os dois CLASSNAME
                 if (strcmp($3, $7) != 0) {
-                    std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento." << std::endl;
+                    std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento. Linha " << yylineno << std::endl;
                     exit(EXIT_FAILURE); 
                 }
                 closure = true;
@@ -320,6 +408,7 @@ general_descriptions
 
         | PROPERTY SOME CLASSNAME AND PROPERTY ONLY CLASSNAME
         {
+            possible_object_property_list.emplace_back($1, yylineno);
             precedence_only = true;
             std::string property1 = std::string($1);
             std::string property2 = std::string($5);
@@ -328,7 +417,7 @@ general_descriptions
                 property_list.push_back($1);
 
                 if (strcmp($3, $7) != 0) {
-                    std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento." << std::endl;
+                    std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento. Linha " << yylineno << std::endl;
                     exit(EXIT_FAILURE); 
                 }
                 closure = true;
@@ -340,12 +429,15 @@ general_descriptions
 
         | PROPERTY SOME CLASSNAME
         {
-            precedence = true;
+            possible_object_property_list.emplace_back($1, yylineno);
+            precedence_some = true;
             property_list.push_back($1);
+            classname_list_for_only.push_back($3);
         }
         | PROPERTY SOME CLASSNAME COMMA general_descriptions 
         {
-            precedence = true;
+            possible_object_property_list.emplace_back($1, yylineno);
+            precedence_some = true;
             property_list.push_back($1);
             if(precedence_only == true){
                 std::string current_classname = std::string($3);
@@ -362,22 +454,25 @@ general_descriptions
                     }
 
                     if (!found) {
-                        std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento." << std::endl;
+                        std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento. Linha " << yylineno << std::endl;
                         exit(EXIT_FAILURE); 
                     }
                 }else{
-                        std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento." << std::endl;
+                        std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento. Linha " << yylineno << std::endl;
                         exit(EXIT_FAILURE); 
                 }
+            } else{
+                classname_list_for_only.push_back($3);
             }
-            precedence = true;
+            precedence_some = true;
             property_list.push_back($1);
         }
         | PROPERTY SOME CLASSNAME AND general_descriptions
         {
-            precedence = true;
-            property_list.push_back($1);
-            if(precedence_only == true){
+            possible_object_property_list.emplace_back($1, yylineno);
+            precedence_some = true; // indica que apareceu um some
+            property_list.push_back($1); // adicionar a propriedade da regra do some para verificar se é igual a da eventual regra do only
+            if(precedence_only == true){ // se tiver aparecido um only, faço a verificação dos nomes de classes
                 std::string current_classname = std::string($3);
                 if (!classname_list.empty()) {
                     bool found = false;
@@ -391,22 +486,25 @@ general_descriptions
                         }
                     }
 
-                    if (!found) {
-                        std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento." << std::endl;
+                    if (!found) { // se o only tiver aparecido antes e o nome de classe dele não corresponder ao nome de classe do some, lança exceção
+                        std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento. Linha " << yylineno << std::endl;
                         exit(EXIT_FAILURE); 
                     }
-                }else{
-                        std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento." << std::endl;
+                }else{ // lança exceção caso a lista esteja vazia mesmo aparecendo um axioma (only) antes
+                        std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento. Linha " << yylineno << std::endl;
                         exit(EXIT_FAILURE); 
                 }
+            } else{ // adiciona na lista para verificar se o only que aparecer após regras do some (assim como a propreidade) são iguais, se forem, lança exceção e, caso a propriedade e os nomes de classes forem diferentes, não lança exceção, apesar de não ser boa prática
+                classname_list_for_only.push_back($3);
             }
-            precedence = true;
-            property_list.push_back($1);
+            precedence_some = true;
+            property_list.push_back($1); // para verificação das propriedades iguais
         }
         | PROPERTY SOME CLASSNAME COMMA property_only_description 
         {   
+            possible_object_property_list.emplace_back($1, yylineno);
             precedence_only = true;
-            precedence = true;
+            precedence_some = true;
             property_list.push_back($1);
 
             if (!classname_list.empty()) {
@@ -423,16 +521,19 @@ general_descriptions
                 }
 
                 if (!found) {
-                    std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento." << std::endl;
+                    std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento. Linha " << yylineno << std::endl;
                     exit(EXIT_FAILURE); 
                 }
+            } else{
+                classname_list_for_only.push_back($3);
             }
         }
 
         | PROPERTY SOME CLASSNAME AND property_only_description
         {   
+            possible_object_property_list.emplace_back($1, yylineno);
             precedence_only = true;
-            precedence = true;
+            precedence_some = true;
             property_list.push_back($1);
 
             if (!classname_list.empty()) {
@@ -449,13 +550,18 @@ general_descriptions
                 }
 
                 if (!found) {
-                    std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento." << std::endl;
+                    std::cerr << "Erro semântico: CLASSNAME '" << current_classname << "' não encontrado no axioma de fechamento. Linha " << yylineno << std::endl;
                     exit(EXIT_FAILURE); 
                 }
-            } 
+            } else{
+                classname_list_for_only.push_back($3);
+            }
         }
 
         | PROPERTY SOME subc_namespace_type general_descriptions
+        {
+            possible_data_property_list.emplace_back($1, yylineno);
+        }
         | INVERSE PROPERTY only_or_some_or_quantifier CLASSNAME COMMA general_descriptions
         | INVERSE PROPERTY only_or_some_or_quantifier CLASSNAME AND general_descriptions
         | INVERSE PROPERTY only_or_some_or_quantifier CLASSNAME
@@ -505,24 +611,60 @@ property_only_description
         : PROPERTY ONLY LEFT_PARENTHESIS class_list_or RIGHT_PARENTHESIS 
         | PROPERTY ONLY LEFT_PARENTHESIS class_list_or RIGHT_PARENTHESIS COMMA general_descriptions
         {
-            if(precedence == true){
+            if (precedence_some == true) {
                 std::string last_element = property_list.back();
-                if(last_element == $1){
-                    std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente." << std::endl;
+                if (last_element == $1) {
+                    std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente. Linha " << yylineno << std::endl;
                     exit(EXIT_FAILURE); 
+                }
+                if (!classname_list.empty() && !classname_list_for_only.empty()) {
+                    // Usar um set para otimizar a busca
+                    std::unordered_set<std::string> classname_set(classname_list_for_only.begin(), classname_list_for_only.end());
+                    bool found = false;
+
+                    for (const auto& classname : classname_list) {
+                        if (classname_set.count(classname) > 0) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found) {
+                        std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente. Linha " << yylineno << std::endl;
+                        exit(EXIT_FAILURE);
+                    }
                 }
             }
         }
+        
         | PROPERTY ONLY LEFT_PARENTHESIS class_list_or RIGHT_PARENTHESIS AND general_descriptions
         {
-            if(precedence == true){
+            if (precedence_some == true) {
                 std::string last_element = property_list.back();
-                if(last_element == $1){
-                    std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente." << std::endl;
+                if (last_element == $1) {
+                    std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente. Linha " << yylineno << std::endl;
                     exit(EXIT_FAILURE); 
+                }
+                if (!classname_list.empty() && !classname_list_for_only.empty()) {
+                    // Usar um set para otimizar a busca
+                    std::unordered_set<std::string> classname_set(classname_list_for_only.begin(), classname_list_for_only.end());
+                    bool found = false;
+
+                    for (const auto& classname : classname_list) {
+                        if (classname_set.count(classname) > 0) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found) {
+                        std::cerr << "Erro semântico: Axioma de fechamento declarado indevidamente. Linha " << yylineno << std::endl;
+                        exit(EXIT_FAILURE);
+                    }
                 }
             }
         }
+
         | PROPERTY ONLY LEFT_PARENTHESIS class_list_or error {
             printf("Erro. O analisador esperava o fechamento de parêntese após a classe.\n");
             exit(EXIT_FAILURE); 
@@ -550,18 +692,19 @@ property_some_description
         ;
 
 property_only_or_some_classname_or_description
-        : LEFT_PARENTHESIS PROPERTY only_or_some_or_quantifier CLASSNAME RIGHT_PARENTHESIS
+        : LEFT_PARENTHESIS PROPERTY SOME CLASSNAME RIGHT_PARENTHESIS
         {
-            object_property_list.emplace_back($2, yylineno);
+            possible_object_property_list.emplace_back($2, yylineno);
         }
-        | LEFT_PARENTHESIS PROPERTY SOME subc_namespace_type RIGHT_PARENTHESIS // verificar se é necessária essa regra
-        {
-            data_property_list.emplace_back($2, yylineno);
-        }
+        | LEFT_PARENTHESIS PROPERTY ONLY CLASSNAME RIGHT_PARENTHESIS
+        | LEFT_PARENTHESIS PROPERTY quantifier CARDINAL CLASSNAME RIGHT_PARENTHESIS
         | LEFT_PARENTHESIS PROPERTY quantifier CARDINAL subc_namespace_type RIGHT_PARENTHESIS
+        | LEFT_PARENTHESIS PROPERTY SOME subc_namespace_type RIGHT_PARENTHESIS
         {
-           data_property_list.emplace_back($2, yylineno);
+            possible_data_property_list.emplace_back($2, yylineno);
         }
+        | LEFT_PARENTHESIS PROPERTY SOME CARDINAL subc_namespace_type RIGHT_PARENTHESIS
+        | LEFT_PARENTHESIS PROPERTY ONLY CARDINAL subc_namespace_type RIGHT_PARENTHESIS
         | LEFT_PARENTHESIS PROPERTY SOME LEFT_PARENTHESIS PROPERTY VALUE INDIVIDUAL RIGHT_PARENTHESIS RIGHT_PARENTHESIS
         {
             nested = true;
@@ -699,7 +842,9 @@ subc_namespace_type
         : NAMESPACE INTEGER LEFT_BRACKET sign CARDINAL RIGHT_BRACKET 
         | NAMESPACE INTEGER
         | NAMESPACE STRING
-        | NAMESPACE FLOAT LEFT_BRACKET sign CARDINAL RIGHT_BRACKET 
+        | NAMESPACE DOUBLE LEFT_BRACKET sign CARDINAL DOT CARDINAL RIGHT_BRACKET 
+        | NAMESPACE DOUBLE
+        | NAMESPACE FLOAT LEFT_BRACKET sign CARDINAL DOT CARDINAL RIGHT_BRACKET 
         | NAMESPACE FLOAT
         | NAMESPACE error {
             printf("Erro na criação de um namespace. O analisador esperava uma declaração como integer, string ou float.\n");

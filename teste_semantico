@@ -26,18 +26,6 @@ Individuals:
 MargheritaPizza1,
 MargheritaPizza2
 
-Class: MargheritaPizza
-SubClassOf:
-NamedPizza,
-hasTopping only (MozzarellaTopping or TomatoTopping),
-hasTopping some MozzarellaTopping,
-hasTopping some TomatoTopping
-DisjointClasses:
-AmericanaHotPizza, AmericanaPizza, SohoPizza
-Individuals:
-MargheritaPizza1,
-MargheritaPizza2
-
 Class: HighCaloriePizza
 EquivalentTo:
 Pizza
@@ -58,3 +46,16 @@ SubClassOf:
 Person
 and (ssn min 1 xsd:string)
 
+Class: Customer 
+ 
+    EquivalentTo: 
+        Person 
+         and (purchasedPizza some Pizza) 
+         and (hasPhone some xsd:string)
+
+Class: EvaluationFacility 
+         
+    SubClassOf:  
+        IntermediaryParticipant, 
+        emitsReport some EvaluationReport, 
+        mediates some EvaluationAct 

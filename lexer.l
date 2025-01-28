@@ -358,6 +358,12 @@ SymbolTable symbolTable;
     return COMMA; 
 }
 
+"." {
+    symbols++;
+    symbolTable.addSymbol("dot", "Special Symbol", yylineno);
+    return DOT; 
+}
+
 "(" {
     symbols++;
     symbolTable.addSymbol("leftParenthesis", "Special Symbol", yylineno);
@@ -444,7 +450,7 @@ SymbolTable symbolTable;
     return NAMESPACE; // Retorna identificador para "Namespace"
 }
 
-[0-9]+[a-zA-Z!@#$%^&*()_+={}\[:;,.<>?/\\|~`-]+ {
+[0-9]+[a-zA-Z!@#$%^&*()_+={}\[:;,<>?/\\|~`-]+ {
     // Erro de token inválido
     cout << "[ERROR] Invalid Token: \"" << yytext << "\". Cardinal must not be followed by letters or invalid symbols. Line: " << yylineno << "\n";
 }
