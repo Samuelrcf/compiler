@@ -8,6 +8,9 @@
 5. [Estrutura do Projeto](#estrutura-do-projeto)
 6. [Tutorial de Execução](#tutorial-de-execução)
 7. [Tipos de Classes](#tipos-de-classes)
+8. [Analisador Léxico](#analisador-léxico)
+   - [Principais Componentes](#principais-componentes)
+   - [Tabela de Símbolos](#tabela-de-símbolos)
 8. [Analisador Sintático](#analisador-sintático)
    - [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
    - [Regras de Produção do Analisador Sintático](#regras-de-produção-do-analisador-sintático)
@@ -175,6 +178,48 @@ SubClassOf:
 </ul>
 
             
+---
+
+<h1>Analisador Léxico</h1>
+
+<h2>Principais Componentes</h2>
+
+### Palavras Reservadas:
+
+AND, OR, NOT: Operadores relacionais.
+
+SOME, ALL, VALUE, MIN, MAX, EXACTLY, THAT: Quantificadores.
+
+ONLY, CLASS, EQUIVALENTTO, INDIVIDUALS, SUBCLASSOF, DISJOINTCLASSES: Palavras-chave para descrever classes e relações entre elas.
+
+### Tipos de Dados:
+
+Tipos como rational, real, decimal, string, integer, entre outros, são reconhecidos e contados conforme aparecem no código de entrada.
+
+### Classes:
+
+começam com letra maiúscula e podem conter palavras compostas com ou sem separação por underline (ex.: ClassName, My_Class).
+
+### Propriedades: 
+
+começando com letra minúsculas, representando propriedades ou atributos de uma classe ou entidade (ex.: propertyName).
+
+### Indivíduos: 
+
+Identificadores que geralmente referenciam instâncias específicas de uma classe. Iniciam com letra maiúscula e terminam com números (ex.: Individual123).
+
+### Símbolos Especiais:
+
+Símbolos como colchetes, chaves, parênteses, e outros caracteres especiais são tratados como tokens separados.
+
+### Namespaces:
+
+Identificados por uma sequência de 3 a 4 letras minúsculas seguidas por dois pontos.
+
+## Tabela de Símbolos
+
+<p>O analisador mantém uma tabela de símbolos onde são armazenados os tokens identificados, suas categorias (por exemplo, tipo, classe, propriedade) e o número da linha onde foram encontrados.</p>
+
 ---
 
 <h1>Analisador Sintático</h1>
