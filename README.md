@@ -11,18 +11,24 @@
 8. [Analisador Léxico](#analisador-léxico)
    - [Principais Componentes](#principais-componentes)
    - [Tabela de Símbolos](#tabela-de-símbolos)
-8. [Analisador Sintático](#analisador-sintático)
+9. [Analisador Sintático](#analisador-sintático)
    - [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
    - [Regras de Produção do Analisador Sintático](#regras-de-produção-do-analisador-sintático)
    - [Saída do Analisador Sintático](#saída-do-analisador-sintático)
-9. [Analisador Semântico](#analisador-semântico)
-10. [Considerações Finais](#considerações-finais)
+10. [Analisador Semântico](#analisador-semântico)
+    - [Análise de Precedência dos Operadores de Cabeçalho](#análise-de-precedência-dos-operadores-de-cabeçalho)
+        - [Precedência das Palavras-Chave](#precedência-das-palavras-chave)
+        - [Axioma de Fechamento](#axioma-de-fechamento)
+    - [Verificação estática de tipos por coerção](#verificação-estática-de-tipos-por-coerção)
+    - [Verifição estática de tipos por sobrecarga](#verifição-estática-de-tipos-por-sobrecarga)
+11. [Considerações Finais](#considerações-finais)
+
 
 
 
 
 <h2>Objetivo</h2>
-<p>O projeto consiste em estender o analisador sintático com análise semântica de forma a ajudar um ontologista a: (1) escrever as declarações usando a ordem correta dos operadores de cabeçalho (Class, SubclassOf, EquivalentTo, DisjointClasses, Individuals); (2) escrever corretamente os tipos e seus respectivos intervalos que compõem as data properties; e (3) classificar as propriedades em data properties e object properties, por sobrecarregamento).</p>
+<p>O projeto tem como objetivo desenvolver um compilador completo para a linguagem OWL Manchester Syntax, integrando as etapas de análise léxica, sintática e semântica. O analisador léxico é responsável por identificar e categorizar os elementos básicos da linguagem, como palavras reservadas, identificadores, e símbolos especiais. O analisador sintático verifica a estrutura gramatical das declarações, assegurando que estejam em conformidade com as regras de produção definidas. Por fim, o analisador semântico valida a lógica das declarações, auxiliando o ontologista a: (1) escrever as declarações usando a ordem correta dos operadores de cabeçalho (Class, SubclassOf, EquivalentTo, DisjointClasses, Individuals); (2) definir corretamente os tipos de dados e seus respectivos intervalos em data properties; e (3) classificar propriedades como data properties ou object properties, utilizando sobrecarga para simplificar a distinção. Esse compilador visa fornecer um suporte abrangente para a escrita e validação de ontologias, garantindo precisão e consistência.</p>
 
 <h2>Equipe</h2>
 <ul>
@@ -583,7 +589,40 @@ EquivalentTo:
 <pre><code>Erro sintático: TOKEN "Disjoint Classes:" (linha 117)
 Erro na criação da classe. O analisador esperava a declarção 'SubClassOf:' ou 'EquivalentTo:'.</code></pre>
 
-<h2>Analisador Semântico</h2>
+---
+
+<h1>Analisador Semântico</h2>
+
+<h2>Análise de precedência dos operadores de cabeçalho</h2>
+
+<h3>Precedência das Palavras-Chave</h3>
+<p>Nessa primeira análise, buscamos garantir que a declaração das palavras-chave siga uma determinada ordem, sendo esta: <strong>Class → EquivalentTo → SubClassOf → DisjointClasses → Individuals.</strong></p>
+<p><strong>Exemplo:</strong></p>
+<pre><code class="plaintext">
+// Classe correta
+Class: NOME_DA_CLASSE
+    EquivalentTo:
+    CLASSE
+
+// Classe correta
+Class: NOME_DA_CLASSE
+    SubClassOf:
+    CLASSE
+    DisjointClasses:
+    OUTRA_CLASSE
+    INDIVIDUALS:
+    INDIVIDUO
+
+// Classe com erro
+Class: CLASSE_ERRO
+    SubClassOf:
+    CLASSE
+    EquivalentTo:
+    CLASSE
+</code></pre>
+
+
+---
 
 <h2>Considerações Finais</h2> 
 <p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p>
