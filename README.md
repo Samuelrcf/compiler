@@ -19,8 +19,8 @@
     - [Análise de Precedência dos Operadores de Cabeçalho](#análise-de-precedência-dos-operadores-de-cabeçalho)
         - [Precedência das Palavras-Chave](#precedência-das-palavras-chave)
         - [Axioma de Fechamento](#axioma-de-fechamento)
-    - [Verificação estática de tipos por coerção](#verificação-estática-de-tipos-por-coerção)
-    - [Verifição estática de tipos por sobrecarga](#verifição-estática-de-tipos-por-sobrecarga)
+    - [Verificação Estática de Tipos por Coerção](#verificação-estática-de-tipos-por-coerção)
+    - [Verifição Estática de Tipos Por Sobrecarga](#verifição-estática-de-tipos-por-sobrecarga)
 11. [Considerações Finais](#considerações-finais)
 
 
@@ -598,7 +598,7 @@ Erro na criação da classe. O analisador esperava a declarção 'SubClassOf:' o
 <h3>Precedência das Palavras-Chave</h3>
 <p>Nessa primeira análise, buscamos garantir que a declaração das palavras-chave siga uma determinada ordem, sendo esta: <strong>Class → EquivalentTo → SubClassOf → DisjointClasses → Individuals.</strong></p>
 <p><strong>Exemplo:</strong></p>
-<pre><code class="plaintext">
+<pre><code>
 // Classe correta
 Class: NOME_DA_CLASSE
     EquivalentTo:
@@ -621,7 +621,61 @@ Class: CLASSE_ERRO
     CLASSE
 </code></pre>
 
+<h3>Axioma de fechamento</h3>
+<p>Também temos a precedência do axioma de fechamento para uma propriedade que deve ser declarado somente após as classes relacionadas à propriedade.</p>
+<p><strong>Exemplo:</strong></p>
+<pre><code>
+//...
+ SubClassOf:
+ CLASSE,
+ PROPRIEDADE QUANTIFICADOR EXEMPLO,
+ PROPRIEDADE QUANTIFICADOR OUTROEXEMPLO,
+ PROPRIEDADE only (EXEMPLO or OUTROEXEMPLO)
+// O fragmento abaixo resulta em erro
+ SubClassOf:
+ CLASSE,
+ PROPRIEDADE only (EXEMPLO or OUTROEXEMPLO),
+ PROPRIEDADE QUANTIFICADOR EXEMPLO,
+ PROPRIEDADE QUANTIFICADOR OUTROEXEMPLO
+</code></pre>
 
+<h2>Verificação Estática de Tipos por Coerção</h2>
+<p> Nesta análise, o objetivo é garantir que tipos que requerem uma delimitação de intervalo, no caso o xsd:integer e xsd:float, possuam essa restrição após sua declaração, envolta em colchetes, com um operador relacional e uma cardinalidade. Também, garante-se que um tipo inteiro receberá um inteiro como parâmetro e um ponto-flutuante recebera um ponto-flutuante.</p>
+<pre><code>
+ // ...
+  EquivalentTo:
+  CLASSE
+  and (PROPRIEDADE QUANTIFICADOR xsd:integer[>= 400])
+  and (PROPRIEDADE QUANTIFICADOR xsd:float[>= 20.5])
+ // O fragmento abaixo resulta em erro
+  EquivalentTo:
+  CLASSE
+  and (PROPRIEDADE QUANTIFICADOR xsd:float)
+</code></pre>
+<p>Além da garantia que um os operadores min, max e exactly sejam sucedidos de uma cardinaldide.</p>
+<pre><code>
+ // ...
+  EquivalentTo:
+  CLASSE
+  and (PROPRIEDADE min 1 CLASSE)
+ // O fragmento abaixo resulta em erro
+  EquivalentTo:
+  CLASSE
+  and (PROPRIEDADE exactly CLASSE)
+</code></pre>
+
+<h2>Verifição Estática de Tipos Por Sobrecarga</h2>
+<p>A última análise feita identifica e diferencia uma Data property de uma Object property para auxiliar o usuário na hora de debugar. Uma Data property é definida pela tripla (propriedade, quantificador, datatype) enquanto que o Object property se define pela tripla (propriedade, quantificador, classe).</p>
+<pre><code>
+ // ...
+  EquivalentTo:
+  CLASSE
+  and (PROPRIEDADE QUANTIFICADOR xsd:string) // Data property  
+ // ...
+  SubClassOf:
+  CLASSE,
+  PROPRIEDADE QUANTIFICADOR CLASSE // Object property
+</code></pre>
 ---
 
 <h2>Considerações Finais</h2> 
