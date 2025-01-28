@@ -1,4 +1,4 @@
-<h1>Implementação de um compilador(analisador léxico, sintático e semântico) para OWL Manchester Syntax</h1>
+<h1>Implementação de um Compilador(Analisador Léxico, Sintático e Semântico) para OWL Manchester Syntax</h1>
 
 # Índice
 1. [Objetivo](#objetivo)
@@ -679,5 +679,6 @@ Class: CLASSE_ERRO
 
 ---
 
-<h2>Considerações Finais</h2> 
-<p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p>
+<h2>Considerações Finais</h2>
+<p>Este compilador foi desenvolvido para ser modular e extensível, permitindo a integração de novos recursos e regras conforme a evolução dos requisitos. Composto por um analisador léxico, sintático e semântico, o sistema oferece uma abordagem completa para o processamento de linguagens formais. O analisador léxico realiza a identificação e categorização dos tokens, enquanto o sintático verifica a conformidade com as regras gramaticais da linguagem. Por fim, o analisador semântico garante a consistência e validade semântica dos elementos analisados. Esse projeto serve como uma ferramenta educacional e prática, proporcionando um entendimento aprofundado dos conceitos de análise de linguagens e sua aplicação em diferentes contextos.</p>
+
