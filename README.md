@@ -1,4 +1,4 @@
-<h1>Implementação de um Analisador Sintático para OWL Manchester Syntax</h1>
+<h1>Implementação de um compilador(analisador léxico, sintático e semântico) para OWL Manchester Syntax</h1>
 
 # Índice
 1. [Objetivo](#objetivo)
@@ -8,11 +8,13 @@
 5. [Estrutura do Projeto](#estrutura-do-projeto)
 6. [Tutorial de Execução](#tutorial-de-execução)
 7. [Tipos de Classes](#tipos-de-classes)
-8. [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
-9. [Regras de Produção do Analisador Sintático](#regras-de-produção-do-analisador-sintático)
-10. [Saída do Analisador Sintático](#saída-do-analisador-sintático)
-11. [Analisador Semântico](#analisador-semântico)
-12. [Considerações Finais](#considerações-finais)
+8. [Analisador Sintático](#analisador-sintático)
+   - [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
+   - [Regras de Produção do Analisador Sintático](#regras-de-produção-do-analisador-sintático)
+   - [Saída do Analisador Sintático](#saída-do-analisador-sintático)
+9. [Analisador Semântico](#analisador-semântico)
+10. [Considerações Finais](#considerações-finais)
+
 
 
 
@@ -174,6 +176,8 @@ SubClassOf:
 
             
 ---
+
+<h1>Analisador Sintático</h1>
             
 <h2>Descrição dos Tokens do Analisador Sintático</h2>
 
