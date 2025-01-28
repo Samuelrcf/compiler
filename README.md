@@ -676,6 +676,7 @@ Class: CLASSE_ERRO
   CLASSE,
   PROPRIEDADE QUANTIFICADOR CLASSE // Object property
 </code></pre>
+
 ---
 
 <h2>Considerações Finais</h2> 
