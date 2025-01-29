@@ -646,7 +646,9 @@ Class: CLASSE_ERRO
 </code></pre>
 
 <h2>Verifição Estática de Tipos Por Sobrecarga</h2>
-<p>A última análise feita identifica e diferencia uma Data property de uma Object property para auxiliar o usuário na hora de debugar. Uma Data property é definida pela tripla (propriedade, quantificador, datatype) enquanto que o Object property se define pela tripla (propriedade, quantificador, classe).</p>
+<p>A última análise feita identifica e diferencia uma Data property de uma Object property para auxiliar o usuário na hora de debugar. Uma Data Property pede que uma propriedade tenha uma 
+classe como domínio e um tipo de dado como imagem. Ela possui a definição de uma propriedade seguida de um quantificador (some) e um tipo de dado. Já o Object property liga uma classe a 
+outra classe, possuindo propriedades sucedidas por um quantificador (some) e nomes de outras classes.</p>
 <pre><code>
  // ...
   EquivalentTo:
