@@ -162,25 +162,6 @@ EquivalentTo: {Hot, Medium, Mild}
 EquivalentTo: Hot or Medium or Mild
 </code></pre>
   </li>
-  <li>
-    <h3>Classe Especial</h3>
-    <p>Uma classe que não satisfaz nenhuma das anteriores</p>
-    <h4>Exemplos</h4>
-    <pre><code>Class: PizzaBase
-DisjointClasses:
-  Pizza, PizzaBase, PizzaTopping
-
-Class: PizzaTopping
-DisjointClasses:
-  Pizza, PizzaBase, PizzaTopping
-
-Class: Evaluated
-EquivalentTo:
-  BrokerServiceProvider or Connector or CoreParticipant
-SubClassOf:
-  FunctionalComplex
-</code></pre>
-  </li>
 </ul>
 
             
