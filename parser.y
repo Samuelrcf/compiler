@@ -729,6 +729,10 @@ property_only_or_some_classname_or_description
             printf("Erro. O analisador esperava o nome de uma classe.\n");
             exit(EXIT_FAILURE); 
             }
+        | LEFT_PARENTHESIS PROPERTY quantifier error {
+            printf("Erro. O analisador esperava um numeral após a declaração da do quantificador.\n");
+            exit(EXIT_FAILURE); 
+            }
         | LEFT_PARENTHESIS PROPERTY error {
             printf("Erro. O analisador esperava um 'only', 'some' ou um quantificador após a declaração da propriedade.\n");
             exit(EXIT_FAILURE); 

@@ -1,4 +1,4 @@
-<h1>Implementação de um Analisador Sintático para OWL Manchester Syntax</h1>
+<h1>Implementação de um Compilador(Analisador Léxico, Sintático e Semântico) para OWL Manchester Syntax</h1>
 
 # Índice
 1. [Objetivo](#objetivo)
@@ -8,16 +8,27 @@
 5. [Estrutura do Projeto](#estrutura-do-projeto)
 6. [Tutorial de Execução](#tutorial-de-execução)
 7. [Tipos de Classes](#tipos-de-classes)
-8. [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
-9. [Regras de Produção do Analisador Sintático](#regras-de-produção-do-analisador-sintático)
-10. [Saída do Analisador Sintático](#saída-do-analisador-sintático)
-11. [Analisador Semântico](#analisador-semântico)
-12. [Considerações Finais](#considerações-finais)
+8. [Analisador Léxico](#analisador-léxico)
+   - [Principais Componentes](#principais-componentes)
+   - [Tabela de Símbolos](#tabela-de-símbolos)
+9. [Analisador Sintático](#analisador-sintático)
+   - [Descrição dos Tokens do Analisador Sintático](#descrição-dos-tokens-do-analisador-sintático)
+   - [Regras de Produção do Analisador Sintático](#regras-de-produção-do-analisador-sintático)
+   - [Saída do Analisador Sintático](#saída-do-analisador-sintático)
+10. [Analisador Semântico](#analisador-semântico)
+    - [Análise de Precedência dos Operadores de Cabeçalho](#análise-de-precedência-dos-operadores-de-cabeçalho)
+        - [Precedência das Palavras-Chave](#precedência-das-palavras-chave)
+        - [Axioma de Fechamento](#axioma-de-fechamento)
+    - [Verificação Estática de Tipos por Coerção](#verificação-estática-de-tipos-por-coerção)
+    - [Verifição Estática de Tipos Por Sobrecarga](#verifição-estática-de-tipos-por-sobrecarga)
+11. [Considerações Finais](#considerações-finais)
+
+
 
 
 
 <h2>Objetivo</h2>
-<p>O projeto consiste em estender o analisador sintático com análise semântica de forma a ajudar um ontologista a: (1) escrever as declarações usando a ordem correta dos operadores de cabeçalho (Class, SubclassOf, EquivalentTo, DisjointClasses, Individuals); (2) escrever corretamente os tipos e seus respectivos intervalos que compõem as data properties; e (3) classificar as propriedades em data properties e object properties, por sobrecarregamento).</p>
+<p>O projeto tem como objetivo desenvolver um compilador completo para a linguagem OWL Manchester Syntax, integrando as etapas de análise léxica, sintática e semântica. O analisador léxico é responsável por identificar e categorizar os elementos básicos da linguagem, como palavras reservadas, identificadores, e símbolos especiais. O analisador sintático verifica a estrutura gramatical das declarações, assegurando que estejam em conformidade com as regras de produção definidas. Por fim, o analisador semântico valida a lógica das declarações, auxiliando o ontologista a: (1) escrever as declarações usando a ordem correta dos operadores de cabeçalho (Class, SubclassOf, EquivalentTo, DisjointClasses, Individuals); (2) definir corretamente os tipos de dados e seus respectivos intervalos em data properties; e (3) classificar propriedades como data properties ou object properties, utilizando sobrecarga para simplificar a distinção. Esse compilador visa fornecer um suporte abrangente para a escrita e validação de ontologias, garantindo precisão e consistência.</p>
 
 <h2>Equipe</h2>
 <ul>
@@ -174,6 +185,50 @@ SubClassOf:
 
             
 ---
+
+<h1>Analisador Léxico</h1>
+
+<h2>Principais Componentes</h2>
+
+### Palavras Reservadas:
+
+AND, OR, NOT: Operadores relacionais.
+
+SOME, ALL, VALUE, MIN, MAX, EXACTLY, THAT: Quantificadores.
+
+ONLY, CLASS, EQUIVALENTTO, INDIVIDUALS, SUBCLASSOF, DISJOINTCLASSES: Palavras-chave para descrever classes e relações entre elas.
+
+### Tipos de Dados:
+
+Tipos como rational, real, decimal, string, integer, entre outros, são reconhecidos e contados conforme aparecem no código de entrada.
+
+### Classes:
+
+começam com letra maiúscula e podem conter palavras compostas com ou sem separação por underline (ex.: ClassName, My_Class).
+
+### Propriedades: 
+
+começando com letra minúsculas, representando propriedades ou atributos de uma classe ou entidade (ex.: propertyName).
+
+### Indivíduos: 
+
+Identificadores que geralmente referenciam instâncias específicas de uma classe. Iniciam com letra maiúscula e terminam com números (ex.: Individual123).
+
+### Símbolos Especiais:
+
+Símbolos como colchetes, chaves, parênteses, e outros caracteres especiais são tratados como tokens separados.
+
+### Namespaces:
+
+Identificados por uma sequência de 3 a 4 letras minúsculas seguidas por dois pontos.
+
+## Tabela de Símbolos
+
+<p>O analisador mantém uma tabela de símbolos onde são armazenados os tokens identificados, suas categorias (por exemplo, tipo, classe, propriedade) e o número da linha onde foram encontrados.</p>
+
+---
+
+<h1>Analisador Sintático</h1>
             
 <h2>Descrição dos Tokens do Analisador Sintático</h2>
 
@@ -534,7 +589,96 @@ EquivalentTo:
 <pre><code>Erro sintático: TOKEN "Disjoint Classes:" (linha 117)
 Erro na criação da classe. O analisador esperava a declarção 'SubClassOf:' ou 'EquivalentTo:'.</code></pre>
 
-<h2>Analisador Semântico</h2>
+---
 
-<h2>Considerações Finais</h2> 
-<p>Este analisador sintático foi projetado para ser extensível, permitindo a inclusão de novas regras gramaticais e funcionalidades conforme necessário. Ele serve como uma ferramenta educativa e prática para o entendimento dos conceitos de análise sintática e sua aplicação em linguagens formais como OWL Manchester Syntax.</p>
+<h1>Analisador Semântico</h2>
+
+<h2>Análise de precedência dos operadores de cabeçalho</h2>
+
+<h3>Precedência das Palavras-Chave</h3>
+<p>Nessa primeira análise, buscamos garantir que a declaração das palavras-chave siga uma determinada ordem, sendo esta: <strong>Class → EquivalentTo → SubClassOf → DisjointClasses → Individuals.</strong></p>
+<p><strong>Exemplo:</strong></p>
+<pre><code>
+// Classe correta
+Class: NOME_DA_CLASSE
+    EquivalentTo:
+    CLASSE
+
+// Classe correta
+Class: NOME_DA_CLASSE
+    SubClassOf:
+    CLASSE
+    DisjointClasses:
+    OUTRA_CLASSE
+    INDIVIDUALS:
+    INDIVIDUO
+
+// Classe com erro
+Class: CLASSE_ERRO
+    SubClassOf:
+    CLASSE
+    EquivalentTo:
+    CLASSE
+</code></pre>
+
+<h3>Axioma de fechamento</h3>
+<p>Também temos a precedência do axioma de fechamento para uma propriedade que deve ser declarado somente após as classes relacionadas à propriedade.</p>
+<p><strong>Exemplo:</strong></p>
+<pre><code>
+//...
+ SubClassOf:
+ CLASSE,
+ PROPRIEDADE QUANTIFICADOR EXEMPLO,
+ PROPRIEDADE QUANTIFICADOR OUTROEXEMPLO,
+ PROPRIEDADE only (EXEMPLO or OUTROEXEMPLO)
+// O fragmento abaixo resulta em erro
+ SubClassOf:
+ CLASSE,
+ PROPRIEDADE only (EXEMPLO or OUTROEXEMPLO),
+ PROPRIEDADE QUANTIFICADOR EXEMPLO,
+ PROPRIEDADE QUANTIFICADOR OUTROEXEMPLO
+</code></pre>
+
+<h2>Verificação Estática de Tipos por Coerção</h2>
+<p> Nesta análise, o objetivo é garantir que tipos que requerem uma delimitação de intervalo, no caso o xsd:integer e xsd:float, possuam essa restrição após sua declaração, envolta em colchetes, com um operador relacional e uma cardinalidade. Também, garante-se que um tipo inteiro receberá um inteiro como parâmetro e um ponto-flutuante recebera um ponto-flutuante.</p>
+<pre><code>
+ // ...
+  EquivalentTo:
+  CLASSE
+  and (PROPRIEDADE QUANTIFICADOR xsd:integer[>= 400])
+  and (PROPRIEDADE QUANTIFICADOR xsd:float[>= 20.5])
+ // O fragmento abaixo resulta em erro
+  EquivalentTo:
+  CLASSE
+  and (PROPRIEDADE QUANTIFICADOR xsd:float)
+</code></pre>
+<p>Além da garantia que um os operadores min, max e exactly sejam sucedidos de uma cardinaldide.</p>
+<pre><code>
+ // ...
+  EquivalentTo:
+  CLASSE
+  and (PROPRIEDADE min 1 CLASSE)
+ // O fragmento abaixo resulta em erro
+  EquivalentTo:
+  CLASSE
+  and (PROPRIEDADE exactly CLASSE)
+</code></pre>
+
+<h2>Verifição Estática de Tipos Por Sobrecarga</h2>
+<p>A última análise feita identifica e diferencia uma Data property de uma Object property para auxiliar o usuário na hora de debugar. Uma Data property é definida pela tripla (propriedade, quantificador, datatype) enquanto que o Object property se define pela tripla (propriedade, quantificador, classe).</p>
+<pre><code>
+ // ...
+  EquivalentTo:
+  CLASSE
+  and (PROPRIEDADE QUANTIFICADOR xsd:string) // Data property  
+ // ...
+  SubClassOf:
+  CLASSE,
+  PROPRIEDADE QUANTIFICADOR CLASSE // Object property
+</code></pre>
+
+---
+
+<h2>Considerações Finais</h2>
+<p>Este compilador foi desenvolvido para ser modular e extensível, permitindo a integração de novos recursos e regras conforme a evolução dos requisitos. Composto por um analisador léxico, sintático e semântico, o sistema oferece uma abordagem completa para o processamento de linguagens formais. O analisador léxico realiza a identificação e categorização dos tokens, enquanto o sintático verifica a conformidade com as regras gramaticais da linguagem. Por fim, o analisador semântico garante a consistência e validade semântica dos elementos analisados. Esse projeto serve como uma ferramenta educacional e prática, proporcionando um entendimento aprofundado dos conceitos de análise de linguagens e sua aplicação em diferentes contextos.</p>
+
