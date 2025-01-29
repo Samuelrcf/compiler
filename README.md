@@ -631,7 +631,7 @@ Class: CLASSE_ERRO
  // O fragmento abaixo resulta em erro
   EquivalentTo:
   CLASSE
-  and (PROPRIEDADE QUANTIFICADOR xsd:float[>= 45.5])
+  and (PROPRIEDADE QUANTIFICADOR xsd:integer[>= 45.5])
 </code></pre>
 <p>Além da garantia que um os operadores min, max e exactly sejam sucedidos de uma cardinaldide.</p>
 <pre><code>
