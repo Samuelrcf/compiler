@@ -33,7 +33,7 @@
 <h2>Equipe</h2>
 <ul>
   <li>Erick Patrick de Paula Morais Freitas</li>
-  <li>Samuel Rogenes Carvalho Freire</li>
+  <li>Samuel Rógenes Carvalho Freire</li>
 </ul>
 
 ## Requisitos
