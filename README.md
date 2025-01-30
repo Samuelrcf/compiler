@@ -71,13 +71,13 @@ sudo apt-get install flex bison cmake make g++ gdb
 <ol>
   <li>
     <p>Certifique-se de estar em um ambiente Linux. Faça o donwload do projeto em formato zip ou utilizando git clone</p>
-    <p>Para baixar o zip é necessário apenas ir em code e depois em Download ZIP e após isso extrair a pasta</p>
-    <p>Se for utilizando o a ferramenta Git é necessário apenas ir no terminal e digitar o seguinte comando:</p>
+    <p>Para baixar o zip é necessário apenas ir em code e depois em Download ZIP. Após isso, extraia a pasta em algum diretório da sua máquina.</p>
+    <p>Se for utilizando a ferramenta Git é necessário apenas ir no terminal e digitar o seguinte comando:</p>
     <code>git clone git@github.com:Samuelrcf/compiler.git</code>
-    <p>Esse comando irá salvar o código em sua máquina local</p>
+    <p>Esse comando irá salvar o código em sua máquina local.</p>
   </li>
   <li>
-    <p>Importante: é necessário ter o flex e o bison configurado no Visual Studio Code para poder funcionar a compilação do projeto</p>
+    <p>Importante: é necessário ter o flex e o bison configurado no Visual Studio Code para poder funcionar a compilação do projeto.</p>
   </li>
   <li>
     <p>Agora para compilar o analisador usando o makeFile devemos digitar os seguintes comandos:</p>
@@ -85,11 +85,11 @@ sudo apt-get install flex bison cmake make g++ gdb
     <code>make</code>
   </li>
   <li>
-    <p>Após compilar use o comando (você pode substituir "teste_analyzer" por qualquer arquivo de texto que esteja na mesma pasta do programa):</p>
-    <code>./analyzer < teste_analyzer</code>
+    <p>Após compilar use o comando (você pode substituir "teste" por qualquer arquivo de texto que esteja na mesma pasta do programa):</p>
+    <code>./analyzer < teste</code>
   </li>
   <li>
-    <p>O programa irá gerar a análise sintática e mostrar se teve algum erro ou não encontrado no processo de análise</p>
+    <p>O programa irá fazer a análise léxica e sintática e mostrar se teve algum erro ou não encontrado no processo.</p>
   </li>
 </ol>
 
